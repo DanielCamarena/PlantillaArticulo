@@ -1,0 +1,2023 @@
+% -*- mode: latex; coding: utf-8-unix; TeX-PDF-mode: t; fill-column: 78 -*-
+\documentclass[a4paper,11pt]{article}
+
+%Enconding
+\usepackage[utf8]{inputenc} % enconding de entrada, desde 2018 por defecto usa UTF8
+\usepackage[T1]{fontenc} % enconding de salida (en PdfLaTeX, para XeLaTeX se recomienda \usepackage{fontenc})
+\usepackage[english,spanish]{babel} %Se usan ambas configuraciones de idiomas
+
+%Texto
+\usepackage{mathptmx} %Usa Times como fuente de texto, y provee soporte matemático
+\usepackage{helvet} %Fuente de texto Arial, y guarda cierta compatibilidad con Times
+\usepackage{enumerate} %Para enumerar listas
+
+\usepackage{url} %Para usar enlaces web
+\usepackage{hyperref}  %\usepackage[pdftex]{hyperref} %si hay problemas al compilar con PdfLaTeX
+\usepackage[natbibapa]{apacite} %Agregar formato de citación APA
+
+%Matemática AMS (no usados)
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{amsthm}
+
+
+\parskip=3pt\clubpenalty=10000\widowpenalty=10000
+\footnotesep=\baselineskip
+\addtocounter{tocdepth}{-1}
+
+\def\btx-{\textsc{Bib\TeX}}
+\def\ltx-{\LaTeX}
+\def\ltr#1-{<<\texttt{#1}>>}
+\def\tpf#1-{\ltr.#1-}
+\def\cmd#1-{``\texttt{\textbackslash#1}''}
+\newcommand{\flecha}{\ensuremath{\rightarrow}}
+
+
+\hypersetup{
+  colorlinks = true,
+  pdftitle = {Guía casi completa de BibTeX},
+  pdfauthor = {Joaquin Ataz López},
+  pdfsubject = {Uso de BibTeX para la gestión de las referencias bibliográficas en LaTeX.},
+  pdfkeywords = {LaTeX BibTeX},
+}
+
+
+\begin{document}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+\title{Guía \emph{básica} de \btx-\footnotemark}
+
+\footnotetext[1]{Copyright \copyright{} 2023. Daniel Camarena.\\
+  \selectlanguage{english} Permisssion  is granted to  copy, distribute and/or
+  modify this document under the  terms of the GNU Free Documentation License,
+  Version 1.3 or  any later version published by  de Free Software Foundation;
+  with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. A
+  Copy  of  the  license  is  included  in the  section  entitled  ``GNU  Free
+  Documentation  License''.\\\selectlanguage{spanish} \emph{Se  otorga permiso
+    para copiar, distribuir  o modificar este documento en  los términos de la
+    Licencia  GNU para Documentación  Libre, versión  1.3 o  cualquier versión
+    posterior  publicada  por  la   Free  Software  Foundation;  sin  secciones
+    invariantes, sin textos de la cubierta frontal y sin textos de la cubierta
+    posterior. Una copia completa de la  licencia (en inglés) se incluye en el
+    apéndice titulado ``GNU Free Documentation License''}. }
+
+
+\author{Daniel Camarena}
+
+\date{Versión  1,  \today\\\footnotesize   Para  sugerencias  y  correcciones:
+  \texttt{vcamarenap@uni.pe}}
+
+\maketitle
+
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
+\begin{abstract}
+
+  \btx- es un programa auxiliar de \ltx-, diseñado para facilitar el manejo de
+  la bibliografía. Pero es más que eso: es también una herramienta que permite
+  a  \ltx- extraer  datos de  una base  de datos  e  insertarlos adecuadamente
+  formateados en un documento.
+
+  Este  texto pretende  abordar todos  los aspectos  de \btx-,  desde  los más
+  básicos   a   los   más   complejos,   haciendo  además   hincapié   en   su
+  \emph{españolización}, pues \btx-, como tantas otras herramientas, presupone
+  que será usada para trabajar con documentos en inglés.
+
+\end{abstract}
+
+{\parskip=0pt\small\tableofcontents}
+
+\section*{Preliminar}
+\label{sec:preliminar}
+
+\addcontentsline{toc}{section}{Preliminar}
+
+\btx- es un  programa que amplia notablemente las capacidades  de \ltx- con el
+manejo de  la bibliografía. Las  grandes ventajas que ofrece  su uso\footnote{
+  \btx- nos ayuda  a gestionar nuestra bibliografía de  manera independiente a
+  los documentos en  los que debe aparecer, al tiempo  que nos permite generar
+  listas  de referencias  bibliográficas formateadas  de manera  consistente y
+  cambiar  fácilmente  determinadas  características  de las  mismas.   }   se
+incrementan cuando  se maneja una lista  bibliográfica amplia y  cuando con la
+misma bibliografía hay que escribir varios documentos.
+
+No hay  mucha documentación sobre \btx-  en español. Publicadas  en papel sólo
+conozco dos obras, ambas de los mismos autores. La primera, \cite{cascales00},
+sin duda constituye la más completa información sobre \btx- en nuestro idioma:
+mas de 40  páginas en las que se incluyen incluso  los aspectos más avanzados.
+La segunda,  \cite{cascales03}, no es  tan extensa, pero constituye  una buena
+introducción en la que se cubren todos los aspectos básicos y algunos aspectos
+avanzados.
+
+En formato electrónico  y en nuestro idioma conozco  otros dos documentos. Uno
+de  Luis Seidel,  \cite{seidel98} que  es  una buena  introducción, aunque  no
+resulta muy  extenso.  Otro  de José Manuel  Mira, \cite{mira04}, que  no está
+pensado para quienes se aproximen por  primera vez a esta herramienta, pues en
+él  se explica un  \emph{paquete} (\ltr  flexbib-) cuyo  uso presupone  que ya
+conocemos lo básico del trabajo con \btx-.
+
+Como es lógico, en inglés  hay mucha más documentación. Los textos principales
+son el  apéndice B del Libro  sobre \ltx- de Lamport,  \cite{lamport86}, y los
+dos   documentos  que  sobre   \btx-  escribió   su  autor,   Oren  Patashnik:
+\cite{patashnik88} y \cite{patashnik88-2}. El primero se ocupa de los aspectos
+más  básicos,  y está  concebido  como  una  \emph{corrección} del  mencionado
+apéndice B, y el segundo se  ocupa de los aspectos más avanzados.  El problema
+que  tienen estos  documentos  es que  el  trabajo de  Lamport  es difícil  de
+localizar para el público español.
+
+Además  de los documentos  anteriores, en  Internet pueden  localizarse varios
+textos, la  mayoría en  inglés, algunos introductorios  y otros no  tanto.  De
+entre  ellos  me parecen  destacables  \cite{young02}  (un documento  bastante
+equilibrado) y  \cite{markey05}, dirigido  a un público  más avanzado  que los
+otros textos mencionados.
+
+\begin{center}***\end{center}
+
+El  objetivo  fundamental  de  este  documento  es  el  de,  partiendo  de  la
+documentación  que se  acaba de  citar, salvo  \cite{lamport86} al  que  no he
+tenido  acceso,  y  alguna  otra   que  no  se  ha  mencionado  todavía,  como
+\cite{kopla}, poner al alcance del  público hispanoparlante un documento en el
+que se aborden  todos los aspectos de  \btx-, desde los más básicos  a los más
+avanzados. De ahí el  título que he elegido, que tal vez  a alguien le suene a
+pretencioso.  Desde luego esta guía  no es completa, porque hay aspectos sobre
+los que se  pasa casi de puntillas\footnote{Como por  ejemplo las herramientas
+  para gestionar ficheros \tpf  bib-, numerosos estilos bastante extendidos, o
+  los paquetes de  ampliación para trabajar con \btx-.}.   Tal vez ni siquiera
+sea   \emph{casi}    completa.    Pero   sí    es   la   más    completa   que
+conozco\footnote{Quizás  con  la  salvedad  de \cite{cascales00}.   Aunque  el
+  problema de ese libro es que hoy no es ya fácil de localizar.}.
+
+La materia a tratar ha sido  distribuida en tres partes, atendiendo a su nivel
+de complejidad y detalle:
+
+\begin{enumerate}
+
+\item \textbf{\btx- básico:} Cubre  los aspectos básicos del funcionamiento de
+  \btx- que  afectan a las instrucciones  que hay que incluir  en el documento
+  principal de \ltx-, al  diseño y mantenimiento de la base de  datos, y a los
+  distintos estilos  estándar existentes, así  como a los  procedimientos para
+  \emph{españolizarlos}. Es la parte más  extensa del documento. Se supone que
+  sólo con leer  esta parte estaremos totalmente preparados  para trabajar con
+  \btx-.
+
+\item \textbf{\btx-  intermedio:} En esta  parte se describen aspectos  que no
+  son  imprescindibles para  trabajar con  \btx-, pero  cuyo  conocimiento nos
+  proporcionará un  mayor control. En particular  se aborda el  uso de makebst
+  para generar nuestro propio fichero de estilo.
+
+\item \textbf{\btx- avanzado:} Esta última parte entra a fondo en los ficheros
+  de estilo de \btx-. En ella  se describe el lenguaje que estos ficheros usan
+  internamente.
+
+\end{enumerate}
+
+Para entender este documento  no hay que ser un La\TeX perto,  pero sí hay que
+saber  lo suficiente  de \ltx-,  y  del procedimiento  estándar que  en él  se
+implementa para trabajar con referencias bibliográficas.
+
+En general el  contenido de este documento valdrá  para cualquier distribución
+de  \ltx- que  incluya  \btx- (o  sea,  todas las  distribuciones).  Pero  hay
+algunos aspectos que dependen de la concreta instalación que se haya hecho del
+sistema como, por ejemplo, la localización de los directorios en los que \btx-
+lee  las  bases  de datos  o  los  ficheros  de  estilo.   En tales  casos  la
+explicación que doy  no vale para cualquier sistema,  sino exclusivamente para
+el mío,  que es una  instalación estándar de  \ltx- hecha en un  sistema donde
+funciona Ubuntu versión 6.06.  Aunque, en general, estos aspectos dependientes
+del concreto sistema utilizado son tratados en nota a pie de página.
+
+Asimismo, a lo largo del presente documento se citan en ocasiones determinados
+paquetes para \ltx-  o ficheros con estilos adicionales  para \btx-. Salvo que
+se diga lo  contrario, todos los paquetes y  estilos citados están disponibles
+en la  CTAN, (<<\emph{Comprehensive TeX Archives Network}>>)  y deben buscarse
+en:
+
+\begin{itemize}
+
+\item <<\url{http://www.ctan.org/tex-archive/macros/latex/contrib/}>>
+
+\item <<\url{http://www.ctan.org/tex-archive/biblio/bibtex/contrib/}>>
+
+\end{itemize}
+
+\clearpage
+
+\part{\btx- básico}
+\label{part:btx-basico}
+
+\section{Dinámica general del sistema}
+\label{sec:entender-la-dinamica}
+
+\subsection{Preparar nuestro documento principal para usar \btx-}
+\label{sec:prep-nuestro-docum}
+
+
+\paragraph{Las órdenes bibliography y bibliographystyle:\\[\baselineskip]}
+\label{sec:las-orden-bibl}
+
+Para usar \btx- necesitamos dos cosas:
+
+\begin{enumerate}
+
+\item Tener  almacenadas en un fichero aparte,  las referencias bibliográficas
+  que pensemos usar.
+
+\item En el  lugar del documento principal en el que  queramos que aparezca la
+  lista con  las referencias  bibliográficas, debemos insertar  las siguientes
+  dos órdenes de \ltx-:
+
+  {\small
+\begin{verbatim}
+\bibliography{MiBiblio}
+\bibliographystyle{MiEstilo}
+\end{verbatim}
+  }
+
+  Estas  órdenes  provocan que  tras  las  oportunas  compilaciones (véase  la
+  sección \ref{sec:como-generar-la}, página \pageref{sec:como-generar-la}), se
+  genere una lista  con las referencias bibliográficas usadas  en el documento
+  en la  que, además, a cada una  de ellas se le  asignará una \emph{etiqueta}
+  identificativa\footnote{\textbf{NOTA TERMINOLÓGICA:}  En la documentación en
+    castellano  de  \ltx-  el  término  etiqueta  se  suele  usar  para  hacer
+    referencia a  la cadena de texto que  usan en las órdenes  que sirven para
+    tratar con referencias  cruzadas tales como \cmd cite-,  \cmd label-, \cmd
+    index-  o  \cmd  glosary-.   Este  tipo de  \emph{etiquetas}  son  de  uso
+    puramente interno, es decir: \ltx-  las usa como marcadores para apuntar a
+    distintas partes del documento, pero no  se imprimen en él.  Junto a estas
+    \emph{etiquetas}  también se  usa  a  veces el  mismo  término para  hacer
+    referencia al rótulo identificador de  una entrada concreta de la lista de
+    referencias bibliográficas,  que se imprime en el  documento.  Para evitar
+    confusiones,  en este  documento he  reservado el  término \emph{etiqueta}
+    para las que llegan a imprimirse  en el documento final, mientras que para
+    referirme  a las  usadas  internamente como  marcadores,  he reservado  el
+    término \emph{clave}.  }.  Los  datos correspondientes a tales referencias
+  serán buscados en el fichero \ltr MiBiblio.bib-, y la lista se formateará de
+  acuerdo con  las indicaciones de  estilo que se  contengan en el  fichero de
+  estilo \ltr MiEstilo.bst- y se insertará en el lugar del documento en el que
+  se encuentre  \cmd bibliography-.   Las instrucciones de  estilo controlarán
+  asimismo  el tipo de  etiqueta identificativa  que se  asignará a  las obras
+  incluidas en  la lista de referencias. Si  queremos usar más de  una base de
+  datos  podemos  indicarlas, separadas  por  comas,  como  argumento de  \cmd
+  bibliography-.  El  efecto de  esto último será  que las distintas  bases de
+  datos   indicadas   se   concatenerán   en   el   orden   en   el   que   se
+  indicaron\footnote{Lo  que tiene  importancia, porque  en los  ficheros \tpf
+    bib-  hay utilidades  que sólo  funcionan si  el orden  en el  que ciertos
+    elementos se encuentran  dentro del fichero es el  correcto.  Por ejemplo,
+    las abreviaturas deben estar definidas antes de ser usadas, de modo que si
+    tenemos un fichero  que recoja una serie de abreviaturas  para \btx- y una
+    base  de datos  que  las use,  siempre  habrá que  indicar  el fichero  de
+    abreviaturas antes que la base de datos.}.
+
+\end{enumerate}
+
+\subsubsection*{Nombres de ficheros y directorios:}
+\label{sec:nombres-de-ficheros}
+
+El  argumento de  \cmd bibliography-  y el  de \cmd  bibliographystyle-  es el
+nombre  de un  fichero.   Ambos  nombres deben  indicarse  sin especificar  la
+extensión, pues se asume  que esta será la asignada al tipo  de fichero de que
+se trate.   De hecho \btx-  no funciona correctamente  cuando el nombre  de la
+base de  datos no  tiene la extensión  \tpf bib-,  ni tampoco cuando  en dicho
+nombre existe un espacio en blanco  o algún carácter no anglosajón como eñes o
+vocales acentuadas\footnote{Así ocurre en mi  sistema. Es posible que en otros
+  sistemas operativos  no exista  este problema, aunque  creo que  ocurrirá lo
+  mismo, al menos  en lo relativo a la extensión de  los ficheros; porque \cmd
+  thebibliography- se  limita a copiar  en el fichero  \tpf aux- el  texto que
+  recibe como  argumento, y  \btx- le  añade a dicho  texto la  extensión \tpf
+  bib-, salvo en el caso de que ya termine así.}.
+
+Los  ficheros, el  de bibliografía  y el  de estilo,  deben encontrarse  en el
+directorio  de  trabajo  (el  mismo  en  el  que  se  encuentre  el  documento
+principal), o en alguno de los directorios en los que \ltx- busca por defecto,
+los cuales varían  dependiendo de la distribución de \ltx-  concreta de que se
+disponga\footnote{\label{nota:cnf}En  \ltr web2c-, que  es la  distribución de
+  \ltx- estándar para  sistemas Unix/Linux, el árbol de  ficheros de \TeX{} se
+  encuentra  en \ltr  /usr/share/texmf- Allí  hay un  fichero  denominado \ltr
+  texmf.cnf- en el  que se almacenan las variables que  controlan las rutas de
+  búsqueda por  defecto de \ltx- y  sus programas auxiliares.   Aunque a veces
+  dicho  fichero  se  encuentra  en  el  directorio \ltr  web2c-,  o  en  \ltr
+  /etc/texmf/-.  En dicho fichero se  encuentran las dos variables que afectan
+  a los  directorios relativos a \btx-:  BIBINPUTS (directorios en  los que se
+  buscarán  los ficheros \tpf  bib-) y  BSTINPUTS (directorios  en los  que se
+  buscarán los ficheros de estilo).  }.   Si los ficheros que queremos usar no
+están en  alguno de estos directorios  deberemos incluir, junto  con el nombre
+del fichero,  la ruta  de acceso  al mismo, en  cuyo caso  para dicha  ruta se
+aplican  las mismas  reglas  que para  el  nombre de  los  ficheros: no  podrá
+contener espacios en blanco ni caracteres no anglosajones.
+
+\paragraph{Contenido de la lista de referencias a generar:\\[\baselineskip]}
+\label{sec:contenido-de-la}
+
+Las características \emph{formales} y  de ordenación de la lista bibliográfica
+que  se generará,  dependen del  estilo concreto  usado, y  se explican  en la
+sección \ref{sec:los-estil-bibl}.   Aquí me concentraré  exclusivamente en los
+siguientes dos aspectos de la misma:
+
+\begin{description}
+
+\item[Qué referencias  se incluyen en la  lista:] En ella  se contendrán todas
+  las  referencias bibliográficas  que, a  lo largo  de nuestro  documento, se
+  hayan referenciado mediante los comandos \cmd cite- y \cmd nocite-:
+
+  \begin{itemize}
+
+  \item  El  comando \cmd  cite[DatosAdicionales]\{clave\}-  produce un  doble
+    efecto. En  primer lugar, la  referencia bibliográfica identificada  en la
+    base de datos mediante la clave recibida como parámetro, se incluirá en la
+    lista bibliográfica. En segundo lugar,  en el punto del documento donde se
+    encontrara el comando, se imprimirá  la etiqueta asignada a tal referencia
+    en  la  lista   de  referencias  junto  con  los   datos  adicionales  que
+    eventualmente hayamos incluido en el argumento opcional del comando.
+
+  \item El  comando \cmd  nocite\{clave\}- produce el  primero de  los efectos
+    indicados, pero no el segundo, es decir: la obra identificada por la clave
+    será incluida  en la lista bibliográfica  final, y en ella  se le asignará
+    asimismo una  etiqueta (como a  todas las obras  de la lista), pero  en el
+    lugar del documento  en el que se encuentra el comando  \cmd nocite- no se
+    imprimirá nada.
+
+  \end{itemize}
+
+  Ambos  comandos  pueden  recibir,  como  parámetro,  las  claves  de  varias
+  referencias distintas, separadas  mediante comas.  Y en el  caso concreto de
+  \cmd nocite-, si  se escribe \cmd nocite\{*\}- el efecto  será incluir en la
+  lista bibliográfica final todas  las referencias bibliográficas incluidas en
+  la base de datos.
+
+\item[Qué  título tendrá  la lista  de referencias:]  Dependiendo del  tipo de
+  documento  de que  se  trate, el  título  de la  lista  de referencias  está
+  controlado  por dos  variables  de nombre  distinto\footnote{Lo  que, en  mi
+    opinión,  es una  inconsistencia del  sistema. El  paquete  \ltr chbibref-
+    incluye  un  comando  que  permite  cambiar  el  título  de  la  lista  de
+    referencias con  independencia de que se  trate de un  documento tipo \ltr
+    book- o  de un  documento tipo \ltr  article-.}.  En documentos  tipo \ltr
+  book- para  cambiar el título de  la lista debe modificarse  el comando \cmd
+  bibname-, mientras que en documentos tipo \ltr article- el comando \ltx- que
+  hay que modificar es \cmd refname-.   El paquete \ltr babel-, por otra parte
+  asigna a  cada uno de  estos comandos un  valor dependiente del  idioma.  En
+  español los  nombres son ``Bibliografía'' para los  libros y ``Referencias''
+  para los artículos.
+
+  Si,  por   ejemplo,  deseamos  que   la  lista  de  referencias   se  titule
+  ``Bibliografía citada'' y nuestro documento  es de tipo \ltr book- tendremos
+  incluir  en el  cuerpo  de  nuestro documento\footnote{Y  es  que, según  mi
+    experiencia, esta orden no produce  efectos si se incluye en el preámbulo.
+    Posiblemente  por la  interacción que  la  carga del  paquete \ltr  babel-
+    produce.} la siguiente orden:
+
+  \verb|\renewcommand{\bibname}{Bibliograf\'ia citada}|
+
+  Asimismo, si  se desea que  en el índice  de contenido de  nuestro documento
+  aparezca una entrada para la bibliografía, hay que incluirla a mano mediante
+  la orden \cmd addscontentline-  de \ltx-\footnote{El paquete \ltr tocbibind-
+    hace que los índices y la lista de referencias se incluyan automáticamente
+    en la tabla  de contenido.}, la cual debe  insertarse \emph{antes} de \cmd
+  bibliography-,  ya que  si se  inserta detrás,  en el  índice  del documento
+  aparecerá como página de la bibliografía la página en la que esta termina, y
+  no la  página en  la que empieza\footnote{Véase  más adelante en  la sección
+    \ref{sec:elementos-preamble}, a propósito de los elementos \ltr @preamble-
+    de los ficheros \tpf bib-, cómo podemos incluir en un fichero \tpf bib- el
+    código  necesario para  cambiar automáticamente  el título  a la  lista de
+    referencias y asegurarnos de que se incluye en la tabla de contenido.}.
+ 
+\end{description}
+
+\subsection{Cómo generar la lista de referencias bibliográficas}
+\label{sec:como-generar-la}
+
+Una vez que nuestro documento  (llamémosle \ltr MiDoc.tex-) está preparado, en
+los términos que se acaban de exponer, debemos seguir los siguientes pasos:
+
+\begin{enumerate}[1º]
+
+\item Compilar con \ltx- nuestro documento  \tpf tex-. Ello hará que se genere
+  un fichero de  extensión \tpf aux-, en el que  se incluirá información sobre
+  la base  de datos a  usar, el  fichero de estilo  a usar, y  las referencias
+  bibliográficas que hay que incluir en la lista de referencias.
+
+\item  Ejecutar, desde  la línea  de  comandos\footnote{Numerosas herramientas
+    para \ltx-  incorporan la  posibilidad de ejecutar  desde el  mismo editor
+    tanto \ltx- como  cualquiera de sus programas auxiliares,  en cuyo caso no
+    sería preciso ejecutar \btx- \emph{desde  la línea de comando}.}, la orden
+  \ltr   bibtex  MiDoc-.    Ello  hará   que   \btx-  lea   el  fichero   \tpf
+  aux-\footnote{De hecho  \btx- se  ejecuta sobre el  fichero \tpf aux-,  y no
+    sobre el fichero  \tpf tex-. Este detalle puede  escapársenos porque \btx-
+    no exige que  se escriba la extensión. Pero si en  el comando incluimos la
+    extensión  comprobaremos que  \ltr bibtex  MiDoc.tex- generaría  un error,
+    mientras que \ltr  bibtex MiDoc.aux- funcionaría correctamente.}, generado
+  por la anterior  compilación del documento, extrayendo de  él la información
+  que necesita para  trabajar: qué base de datos debe usar,  qué estilo, y qué
+  referencias hay que  buscar en la base.   Y así, tras extraer de  la base de
+  datos  los registros  precisos,  y  formatearlos de  acuerdo  con el  estilo
+  indicado,  \btx- genera  un fichero  de  extensión \tpf  bbl- en  el que  se
+  contienen  los  comandos de  \ltx-  necesarios  para  escribir la  lista  de
+  referencias bibliográficas  que hay que insertar en  el documento principal.
+  \btx- genera también un fichero adicional,  de extensión \tpf blg- que es un
+  fichero \tpf  log-\footnote{Es decir: en  él se almacenan todas  las salidas
+    generadas por  \btx-, incluyendo los  mensajes de advertencia o  error. En
+    caso de que algo no  haya funcionado como esperábamos es imprescindible la
+    consulta de este fichero para ver qué es lo que ha podido fallar.}.
+
+\item  Compilar de nuevo  el documento  principal con  \ltx-. En  esta segunda
+  compilación, al leer  la orden \cmd bibliography-, se  insertará en su lugar
+  el contenido del fichero \tpf bbl- generado en el paso anterior. Asimismo la
+  nueva compilación reescribe el fichero \tpf aux-, añadiendo a la información
+  que ya existía en él la generada ahora, que es más completa pues incluye los
+  datos  de la  lista  bibliográfica final  que  se acaba  de  insertar en  el
+  documento.
+
+\item Esta última información es usada en una nueva compilación con \ltx- para
+  escribir  correctamente los  rótulos que  hay que  colocar en  lugar  de los
+  comandos  \cmd  cite-.   Y  eventualmente  puede  ser  necesaria  una  nueva
+  compilación: cuando alguno de los campos  de la base de datos contenga algún
+  comando de \ltx- que implique el uso de referencias cruzadas. En particular,
+  el comando \cmd cite-.
+
+\end{enumerate}
+
+¿Parece complicado? No lo es. Lo  que ocurre es que lo he explicado incluyendo
+detalles  sobre cómo  interactúan entre  sí los  distintos  ficheros generados
+durante  las compilaciones  de \ltx-.   Simplificando  y sin  entrar en  tales
+detalles,  lo que  hay  que hacer  es,  tras haber  indicado  en el  documento
+principal el  nombre de la  base de datos  y del estilo, realizar  una primera
+compilación con \ltx-, ejecutar \btx- y  luego compilar de nuevo con \ltx- dos
+veces (o, en ciertos casos, tres).  Esta doble (o triple) compilación final no
+es ninguna especialidad de \btx-, sino  que es requerida por \ltx- siempre que
+trabaja con referencias cruzadas.  Asimismo  habrá que repetir el proceso cada
+vez que incorporemos a nuestro  documento principal un comando que suponga una
+modificación de lista bibliográfica final,  bien por cambiarle el estilo, bien
+por incluir o eliminar referencias bibliográficas.
+
+\section{Las bases de datos bibliográficas}
+\label{sec:las-bases-de}
+
+\subsection{Reglas generales sobre la escritura y codificación de los ficheros
+  \tpf bib-}
+\label{sec:ficheros-.bib-1}
+
+Los ficheros \tpf bib- usados por  \btx- son ficheros de texto sometidos a las
+siguientes reglas generales:
+
+
+\begin{enumerate}
+
+\item El tratamiento de los espacios  en blanco, tabuladores y saltos de línea
+  es  similar  al  que  estos  caracteres reciben  en  \ltx-\footnote{Hay,  no
+    obstante,  una diferencia,  y  es que  en  \ltx- una  línea  en blanco  es
+    relevante pues sirve  para indicar un cambio de  párrafo.  En los ficheros
+    \tpf bib-, una  línea en blanco es tan irrelevante como  un salto de línea
+    simple.}. Son simples delimitadores de palabras y la regla es que da igual
+  cuántos delimitadores haya entre dos palabras\footnote{Podríamos, en teoría,
+    escribir todo el fichero \tpf bib- como una sola e inmensa línea en la que
+    las palabras estuvieran separadas entre  sí por un solo espacio en blanco.
+    Pero tal  fichero sería, para los  seres humanos, más difícil  de leer que
+    otro en el  que hayamos usado los tabuladores, espacios  y saltos de línea
+    para mejorar el aspecto visual (llamado \emph{legibilidad}) del fichero.}.
+
+\item  \btx-  no  distingue   entre  mayúsculas  y  minúsculas\footnote{La  no
+    distinción  entre mayúsculas  y minúsculas  se aplica  a los  elementos de
+    \btx-  (nombres de  registros o  campos,  abreviaturas, etc),  pero no  al
+    contenido de los campos de los registros.  }.
+
+\end{enumerate}
+
+\subsubsection*{Uso de caracteres españoles en los ficheros \tpf bib-}
+\label{sec:uso-de-caracteres}
+
+La  versión original  de \btx-  no  era capaz  de trabajar  con caracteres  no
+anglosajones (como  eñes o vocales  acentuadas).  En la actualidad  existe una
+versión de  \btx- que sí  puede hacerlo. No  obstante se suele  recomendar que
+para  representar esos caracteres  que requieren  8 bits  se sigan  las reglas
+generales  de  \ltx- y  así,  por  ejemplo, en  lugar  de  escribir \ltr  Pág-
+escribamos ``\verb|P\'ag|''\footnote{El problema  de representar caracteres no
+  anglosajones directamente en un fichero de texto, es que estos caracteres no
+  están incluidos en la tabla  ASCII que todos los ordenadores reconocen, sino
+  en  otras  tablas o  \emph{codificaciones}.   Y,  desgraciadamente para  los
+  hablantes   de   idiomas   distintos   al  inglés,   existen   \emph{muchas}
+  codificaciones distintas  para representar los  mismos caracteres: ``utf8'',
+  ``latin1'', ``cp850'', etc.;  y para trabajar con un  documento que contenga
+  este tipo de caracteres es preciso saber exactamente qué codificación se usó
+  para almacenarlo  pero, desgraciadamente, los  ficheros de texto  no guardan
+  información sobre su propia codificación. Además, en el caso concreto de los
+  ficheros \tpf  bib-, el uso  de una codificación  u otra puede afectar  a la
+  ordenación alfabética de los registros  almacenados en la base de datos.}. Y
+aunque es  cierto que  escribir de  ese modo nuestro  idioma es  incómodo, hay
+herramientas que lo  facilitan\footnote{Como, por ejemplo \ltr pybliographer-,
+  una utilidad de  gestión de ficheros \tpf bib-  para sistemas Unix/Linux, en
+  la que podemos teclear normalmente cualquier carácter, pero antes de guardar
+  el fichero,  los caracteres no  anglosajones son convertidos a  la secuencia
+  \ltx- necesaria para representarlos. De  esta herramienta se vuelve a hablar
+  en la sección \ref{sec:herr-graf}.}.
+
+En todo caso, si  decidimos introducir caracteres no anglosajones directamente
+en el fichero \tpf bib-, debemos tener en cuenta que como el contenido de este
+fichero puede eventualmente incorporarse a un documento \tpf tex-, si en ambos
+el tipo de  codificación no coincidiera se generaría un  error. Por ello, para
+usar estos caracteres deben cumplirse los siguientes requisitos:
+
+\begin{enumerate}[a)]
+
+\item Debemos  guardar el fichero \tpf  bib- con la misma  codificación con la
+  que vayamos a guardar el fichero \tpf tex-  en el que se hará uso de la base
+  de datos.
+
+\item   En    el   fichero   \tpf    tex-   debe   usarse   la    orden   \cmd
+  usepackage[cod]\{inputenc\}-    donde   ``cod''    significa    una   cadena
+  representativa de  la codificación usada  en el fichero  \tpf bib- (y  en el
+  \tpf tex-): \ltr utf8-, \ltr latin1-, etc.
+
+\item Debemos asegurarnos de que estamos usando la versión de \btx- de 8 bits.
+
+\end{enumerate}
+
+\subsection{Registros y campos bibliográficos}
+\label{sec:registros-y-campos}
+
+Un fichero \tpf bib- almacena una base de datos bibliográfica. En toda base de
+datos hay dos nociones fundamentales:
+
+\begin{description}
+
+\item[Campo:] Un dato  aislado y básico. Por ejemplo, el año  de edición de un
+  libro, o  el nombre del  autor de  un artículo de  revista, o la  página del
+  libro  de  las  actas  de  un  congreso en  donde  empieza  una  determinada
+  ponencia...
+
+\item[Registro:]  Un  conjunto  de  campos  que permiten  describir  de  forma
+  completa un  ejemplar del  tipo de realidades  a que  se refiere la  base de
+  datos. En nuestro caso, tratándose  de una base de datos bibliográfica, cada
+  registro describe una referencia bibliográfica concreta (y completa).
+
+\end{description}
+
+Es  decir:  todos los  campos  que contienen  datos  de  una misma  referencia
+bibliográfica,  constituirán un registro.   Y la  base de  datos, en  sí misma
+considerada, no  será sino un  conjunto de registros,  cada uno de  los cuales
+consta de varios campos.
+
+\subsubsection{Formato general de los registros y los campos}
+\label{sec:formato-general-de}
+
+En los  ficheros \tpf bib-  se usa el  carácter ``@'', seguido de  una palabra
+representativa del tipo de registro de  que se trate, para indicar que empieza
+un registro. Asimismo se usan llaves para delimitar el contenido del registro.
+En consecuencia el formato de un registro es el siguiente:
+
+
+{\small
+\begin{verbatim}
+@TipoRegistro{clave,
+   Campo1,
+   Campo2,
+   ...
+   CampoN,
+}
+\end{verbatim}
+}
+
+Donde \emph{TipoRegistro}  es el nombre que  identifica a un  concreto tipo de
+registro, y  puede escribirse indistintamente en mayúsculas  o minúsculas.  En
+el contenido del registro, hay básicamente dos elementos:
+
+
+\begin{description}
+
+\item[La clave de identificación del  registro] es siempre su primer elemento.
+  Se usa para distinguir a un  registro concreto del resto de los registros de
+  la base de  datos, y por ello en  una misma base de datos no  debe haber dos
+  registros que tengan  claves iguales, y tampoco deben  unirse o manejarse en
+  un mismo documento dos o más bases de datos si ello implica que alguna clave
+  vaya a repetirse\footnote{Digo que no \emph{deben} usarse claves iguales; no
+    que no pueda  hacerse. Ello es porque \btx- no  genera ningún error cuando
+    en un fichero  dos o más registros tienen la  misma clave. Simplemente, en
+    tal caso, toma en consideración  exclusivamente la primera aparición de la
+    clave, ignorando las restantes. Y,  a tales efectos, téngase en cuenta que
+    para  el control  de  las claves  \btx-  no distingue  entre mayúsculas  y
+    minúsculas.}.   La  clave  puede  consistir en  cualquier  combinación  de
+  letras,  números y  ciertos  signos de  puntuación.   No se  admiten ni  los
+  caracteres no anglosajones (vocales  acentuadas y los caracteres ``¡¿ñÑçÇ'')
+  ni ciertos signos de puntuación como la coma (que se usa para indicar que la
+  clave ha terminado).
+
+  En las citas hechas en el documento \tpf tex- habrá que usar esta clave para
+  identificar al registro al que se quiere hacer referencia.
+
+\item[Los campos:]  A \btx-  le es  indiferente en qué  orden se  escriban los
+  campos  de un determinado  registro, así  como si  se usan  cero, uno  o más
+  saltos de línea entre dos campos.
+
+\end{description}
+
+Para  escribir un  campo dentro  de un  registro podemos  usar indistintamente
+cualquiera de los dos formatos siguientes:
+
+{\small
+\begin{verbatim}
+NombreCampo = { Contenido },
+NombreCampo = " Contenido ",
+\end{verbatim}
+}
+
+En ambos casos intervienen los siguientes elementos:
+
+\begin{description}
+
+\item[Nombre del  campo:] Normalmente será  uno de los campos,  obligatorios u
+  opcionales,  previstos para  el tipo  de registro  de que  se trate.   Si el
+  nombre no coincide con ninguno de los que el estilo ha previsto para el tipo
+  de  registro que  sea, su  contenido será  ignorado.  Si  el mismo  campo se
+  introduce  más  de  una vez  en  el  mismo  registro,  sólo será  tomada  en
+  consideración su primera aparición.
+
+\item[Delimitadores de  contenido:] Se exige  el uso de delimitadores  para el
+  contenido del campo siempre que este  no tenga un valor puramente numérico o
+  consista  en  una abreviatura  previamente  definida  como  tal mediante  la
+  función  \ltr  @String-  (véase la  sección  \ref{sec:uso-de-abreviaturas}).
+  Como  delimitadores se  pueden usar  las llaves  o las  comillas  dobles. La
+  diferencia  entre usar  unas u  otras es  sólo una:  cuando  usamos comillas
+  dobles como  delimitadores, dentro de  la cadena delimitada no  podemos usar
+  comillas dobles, salvo que las encerremos entre llaves. Por ejemplo:
+
+  {\small
+\begin{verbatim}
+title = {Comentarios a "El Buscón" de Quevedo},
+title = "Comentarios a {"}El Buscón{"} de Quevedo",
+\end{verbatim}
+  }
+
+  servirían para incluir un título que a su vez incluya dobles comillas.
+
+
+\item[El contenido de  los campos:] cualquier cosa que se  incluya en un campo
+  puede, eventualmente, incorporarse a un documento \ltx-, y por lo tanto:
+
+  \begin{enumerate}
+
+  \item Es  posible incluir,  como contenido de  un campo, comandos  de \ltx-,
+    aunque ello sólo está recomendado en  casos muy especiales, y nunca es una
+    buena idea que esos comandos sean de \emph{formato} de texto, pues la idea
+    que está detrás  de \btx- es que el formateo de  las listas de referencias
+    se haga depender del estilo usado.
+
+  \item Dentro del  contenido del campo hay que  respetar las reglas generales
+    de \ltx-, no  usar sus caracteres reservados (salvo cuando  se trate de un
+    uso legal) y recordar que \ltx-, a diferencia de \btx-, sí distingue entre
+    mayúsculas y minúsculas.
+
+  \item Las  llaves que pueda haber  en un campo deben  estar equilibradas. Es
+    decir: toda llave abierta debe ser  cerrada. Y ello se aplica incluso para
+    llaves  que se  deben  imprimir\footnote{Lo que  se  debe a  que \btx-  no
+      interpreta los comandos de \ltx-, por lo  tanto si en un campo se lee el
+      texto \ltr  \textbackslash\{-, \btx- no ve un  caracter imprimible, sino
+      una llave abierta que debe ser  cerrada dentro del campo. Por ello en el
+      raro caso de que debamos incluir  como contenido de un campo el carácter
+      ``\{`` (o  ``\}'') habría que usar  el comando \ltx-  \cmd leftbrace- (o
+      \cmd rightbrace-).}.
+
+  \end{enumerate}
+
+  Existen  reglas especiales para  el contenido  de algunos  campos concretos,
+  pero  estas  se  exponen  más   adelante,  cuando  se  explican  los  campos
+  reconocidos por los estilos estándar de \btx-.
+
+\item[La  coma  final:] Indica  que  el contenido  del  campo  ha terminado  y
+  \emph{puede} empezar  otro campo  distinto. No es  obligatoria en  el último
+  campo  de un  registro; pero  no se  produce ningún  error por  el  hecho de
+  introducirla también en él.
+
+\end{description}
+
+Desde  el punto  de  vista de  un  concreto estilo  bibliográfico, los  campos
+presentes en un registro se incluirán en uno de los siguientes grupos:
+
+\begin{description}
+
+\item[Campos  obligatorios:] Son  aquellos que  el estilo  en  cuestión espera
+  encontrar  en un  determinado  tipo de  registro,  de manera  que  si en  un
+  registro  concreto  alguno  de  ellos  no está  presente,  se  generará  una
+  advertencia en  la salida estándar  y en el  fichero \tpf blg-  generado por
+  \btx-. En algunas  ocasiones la falta de uno de  estos campos puede provocar
+  un error, aunque eso no debería ocurrir en un estilo bien diseñado.
+
+\item[Campos opcionales:] Son  aquellos para los que el  estilo en cuestión ha
+  previsto  algún tipo  de  acción, pero  se  ha previsto  también su  posible
+  ausencia, y esta no tiene especial trascendencia.
+
+\item[Campos ignorados:] Cualquier  otro campo presente para el  que el estilo
+  en cuestión no ha previsto ningún tipo de acción.
+
+\end{description}
+
+
+\subsubsection{Tipos de registros bibliográficos}
+\label{sec:registr-bibl}
+
+Las  referencias  bibliográficas  pueden  ser  de distinta  naturaleza,  y  en
+consecuencia  se distinguen  diferentes  tipos de  registros.  A  continuación
+expondré los  nombres de los distintos  tipos de registro  previstos en \btx-,
+indicando  para  cada  uno  de  ellos sus  campos  obligatorios  y  opcionales
+específicos\footnote{Con  \emph{específicos}  quiero  decir que,  para  evitar
+  repeticiones, en la relación que sigue no  se ha incluido en cada uno de los
+  registros los nombres de dos  campos opcionales que están presentes en todos
+  los registros, sean del tipo que sean:  \ltr key- y \ltr note-.  }. Para que
+\btx- pueda  reconocer adecuadamente  los registros y  campos, los  nombres de
+estos deben  ser usados en  inglés, y por  ello los mencionaré en  ese idioma.
+Entre  paréntesis añadiré, para  los tipos  de registro,  lo que  significa su
+nombre.  En la próxima sección se explica para qué sirve cada campo.
+
+\begin{description}
+
+\item[Article  (artículo):]  Un artículo  publicado  en  una revista.   Campos
+  obligatorios:    \texttt{author},    \texttt{title},   \texttt{journal}    y
+  \texttt{year}.  Opcionales: \texttt{volume}, \texttt{number}, \texttt{pages}
+  y \texttt{month}.
+
+\item[Book   (libro):]   Un   libro   \emph{normal}.    Campos   obligatorios:
+  \texttt{author}  o  \texttt{editor},  \texttt{title},  \texttt{publisher}  y
+  \texttt{year}.      Opcionales:    \texttt{volume}     o    \texttt{number},
+  \texttt{series}, \texttt{address}, \texttt{edi\-tion} y \texttt{month}.
+
+\item[Booklet (folleto):] Un trabajo impreso y distribuido pero sin que conste
+  la   editorial  o   institución  que   lo  patrocina.    Campo  obligatorio:
+  \texttt{title}.  Campos  opcionales: \texttt{author}, \texttt{howpublished},
+  \texttt{address}, \texttt{month} y \texttt{year}.
+
+\item[Conference  (conferencia):]   Idéntico  a  InProceedings.    Se  incluye
+  exclusivamente para mantener la compatibilidad con el formato \emph{Scribe}.
+
+\item[InBook (dentro  de un libro):] Una parte  de un libro, que  puede ser un
+  capítulo (o sección o similar) o  un rango de páginas, o ambas cosas. Campos
+  obligatorios:    \texttt{author}    o    \texttt{editor},    \texttt{title},
+  \texttt{chapter}  y/o  \texttt{pages},  \texttt{publisher} y  \texttt{year}.
+  Opcionales:    \texttt{volume}     o    \texttt{number},    \texttt{series},
+  \texttt{type},  \texttt{address},  \texttt{edition}  y  \texttt{month}.   El
+  campo \texttt{title}, en estas referencias,  se refiere al título del libro,
+  no al título del capítulo o grupo de páginas a que se refiere el registro.
+
+\item[InCollection (en  una colección):]  Una parte de  un libro que  tiene su
+  propio   título.   Campos  obligatorios:   \texttt{author},  \texttt{title},
+  \texttt{booktitle},   \texttt{publisher}   y   \texttt{year}.    Opcionales:
+  \texttt{crossref},   \texttt{editor},  \texttt{volume}   o  \texttt{number},
+  \texttt{series},     \texttt{type},     \texttt{chapter},    \texttt{pages},
+  \texttt{address}, \texttt{edition} y \texttt{month}.
+
+\item[InProceedings (en  las actas):] Una conferencia, artículo  o ponencia en
+  las actas  de un congreso o,  o, en general,  en un libro que  agrupe varios
+  trabajos  de  autores  distintos   y  con  títulos  independientes.   Campos
+  obligatorios:     \texttt{author},    \texttt{title},    \texttt{booktitle},
+  \texttt{year}.    Campo   opcionales:  \texttt{crossref},   \texttt{editor},
+  \texttt{volume}   o    \texttt{number},   \texttt{series},   \texttt{pages},
+  \texttt{address},        \texttt{month},       \texttt{organization}       y
+  \texttt{publisher}.
+
+\item[Manual:]  Documentación  técnica.   Campo  obligatorio:  \texttt{title}.
+  Campos opcionales: \texttt{author}, \texttt{organization}, \texttt{address},
+  \texttt{edition}, \texttt{month} y \texttt{year}.
+
+\item[MasterThesis (Proyecto  fin de carrera):]  Lo que en el  mundo académico
+  norteamericano   se  denomina   ``\emph{Master  Thesis}''   o  ``\emph{Minor
+    Thesis}''  y que  en España  equivale  a las  llamadas ``\emph{Tesinas  de
+    licenciatura}'' y a  los \emph{Proyectos de fin de  carrera}; es decir: un
+  trabajo de investigación menor,  leído en una institución académica.  Campos
+  obligatorios:    \texttt{author},    \texttt{title},    \texttt{school}    y
+  \texttt{year}.      Opcionales:     \texttt{type},    \texttt{address}     y
+  \texttt{month}.
+
+\item[Misc  (miscelánea):]  Este tipo  está  previsto  para  ser usado  cuando
+  ninguno de  los otros tipos  encaje bien. Su  peculiaridad es que  carece de
+  campos  obligatorios.  Campos  opcionales:  \texttt{author}, \texttt{title},
+  \texttt{howpublished}, \texttt{month} y \texttt{year}.
+
+\item[PhdThesis (tesis doctoral):] Lo que en el mundo académico norteamericano
+  se denomina ``\emph{PhD Thesis}'',  ``\emph{Major Thesis}'' y que equivale a
+  las  tesis  doctorales españolas,  es  decir:  un  trabajo de  investigación
+  original y extenso que permite obtener el título de doctor que constituye la
+  más   alta    graduación   académica   existente.     Campos   obligatorios:
+  \texttt{author},    \texttt{title},    \texttt{school}   y    \texttt{year}.
+  Opcionales: \texttt{type}, \texttt{address} y \texttt{month}.
+
+\item[Proceedings (libro de actas):] El  libro de actas donde se encuentra una
+  conferencia o ponencia en un congreso, aunque yo lo uso con carácter general
+  para  todos aquellos  libros que  agrupan trabajos,  cada uno  de  ellos con
+  distintos  autores.  Campos  obligatorios:  \texttt{title} y  \texttt{year}.
+  Opcionales:    \texttt{booktitle},   \texttt{editor},    \texttt{volume}   o
+  \texttt{number},    \texttt{series},    \texttt{address},    \texttt{month},
+  \texttt{organization} y \texttt{publisher}.
+
+\item[TechReport  (informe  técnico):]  Un  informe publicado  por  un  centro
+  académico o  institución similar, normalmente numerado dentro  de una serie.
+  Campos obligatorios: \texttt{author}, \texttt{title}, \texttt{institution} y
+  \texttt{year}.     Campos   opcionales:    \texttt{type},   \texttt{number},
+  \texttt{address} y \texttt{month}.
+
+\item[Unpublished (no publicado):] Un documento que tiene un autor y un título
+  pero   que  formalmente   no  ha   sido  publicado.    Campos  obligatorios:
+  \texttt{author}, \texttt{title} y \texttt{note}.  Opcionales: \texttt{month}
+  y \texttt{year}.
+
+\end{description}
+
+A los  campos mencionados hay que añadir,  en todos los tipos  de registro, un
+campo \texttt{key}  y un campo  \texttt{note}, ambos opcionales, salvo  en las
+referencias tipo \ltr Unpublished-, donde \texttt{note} es obligatorio.
+
+\subsubsection{Significado de los distintos campos bibliográficos}
+\label{sec:campos-de-datos-1}
+
+\begin{description}
+
+\item[Address:]  Este campo  está pensado  para almacenar  la dirección  de la
+  editorial o institución responsable  de una publicación. Es siempre opcional
+  y conviene usarlo,  sobre todo, cuando las editoriales  sean pequeñas o poco
+  conocidas. En  la mayor parte  de los casos,  además, no se incluye  aquí la
+  dirección completa, sino exclusivamente la ciudad donde reside la editorial.
+  Hay  especialidades científicas  donde  es costumbre  identificar las  obras
+  publicadas más bien  por la ciudad que por la editorial,  en cuyo caso puede
+  ser buena idea indicar la ciudad no  en el campo \ltr address-, sino en \ltr
+  publisher-.
+
+\item[Author:] Como este es el  campo más complejo, dividiré su explicación en
+  varios apartados:
+
+
+  \paragraph{La autoría de las referencias:}
+  \label{sec:la-autoria-de}
+
+  Toda  referencia bibliográfica  ha  de  tener una  \emph{autoría}  y en  tal
+  sentido,  en  todos  los tipos  de  registros  hay  algún campo  dirigido  a
+  recogerla. Ese campo es normalmente \ltr author-, aunque:
+
+  \begin{enumerate}[a)]
+
+  \item  En \ltr  Proceedings- la  autoría viene  recogida por  el  campo \ltr
+    editor-,  porque  este  tipo  de   registro  recoge  un  libro  sin  autor
+    propiamente dicho,  que recopila  o agrupa varios  trabajos que  sí tienen
+    autor.
+
+  \item En  los tipos \ltr Book- e  \ltr InBook-, el campo  \ltr author- puede
+    ser  sustituido  por  \ltr   editor-.   Si  se  especifican  ambos  campos
+    simultáneamente, el contenido del campo \ltr editor- es ignorado.
+
+  \item  En las  referencias  de tipo  \ltr  Manual-, a  falta  de campo  \ltr
+    author-, la autoría se atribuirá al campo \ltr organization-.
+
+  \end{enumerate}
+
+  En cualquiera de estos casos, la recomendación es que el nombre del autor se
+  escriba tan  completo como se  conozca, es decir:  que no se  usen iniciales
+  para  sustituir  al nombre  propio,  ya  que  ese efecto  podemos  obtenerlo
+  mediante el estilo  bibliográfico. Pero si en la base de  datos no consta el
+  nombre completo no hay estilo bibliográfico que sea capaz de adivinarlo.
+
+  \paragraph{Varios autores:}
+  \label{sec:caso-en-el}
+
+  Si  hay  más  de  un  autor,  para  separar  unos  de  otros  hay  que  usar
+  necesariamente la palabra ``and'' para que \btx- sepa donde empieza un autor
+  y donde  acaba otro.  Si  usamos la conjunción española  equivalente, ``y'',
+  \btx- no formateará correctamente el contenido de este campo porque no sabrá
+  separar a los distintos autores. El hecho de usar ``and'' dentro del fichero
+  \tpf  bib- no  significa que  en nuestros  documentos se  vaya a  usar dicha
+  palabra, pues eso depende del fichero de estilo.
+
+  Si  \emph{dentro}  del nombre  de  uno de  los  autores  aparece la  palabra
+  ``and'', hay  que encerrar entre  llaves (distintas de las  genéricas llaves
+  para  delimitar el contenido  del campo)  el nombre  completo.  Así,  en los
+  siguientes ejemplos:
+
+  {\small
+\begin{verbatim}
+author = "{McArthur And Inc.}",
+author = {{McArthur And Inc.}},
+author = {Thomas R. Delan And {McArthur And Inc.}},
+\end{verbatim}
+  }
+
+  El nombre  que contiene,  como parte  de él, la  palabra ``And''  va siempre
+  entre llaves, con independencia de  qué tipo de delimitador se haya escogido
+  para el campo y de si hay o no mas nombres.
+
+  \paragraph{Distinción entre nombre y apellidos:}
+  \label{sec:dist-entre-nombre}
+
+  El nombre de una persona tiene  varias partes de las que las principales (en
+  los nombres españoles) son el nombre propio (también llamado nombre de pila,
+  o  nombre a  secas)  y los  apellidos.   \btx- descompone  los nombres  para
+  determinar qué parte de los mismos hay que atribuir al nombre propio, cuál a
+  los  apellidos, y  cual a  las  restantes partes  que \btx-  reconoce en  un
+  nombre\footnote{En realidad  \btx- descompone los nombres  en cuatro partes:
+    Nombre de  pila (en inglés,  \emph{First name)}, Partícula  de separación,
+    Apellidos  (en  inglés  \emph{Last  name}  o  \emph{Surname}  y  partícula
+    ``Jr.'',  muy habitual  en los  nombres anglosajones.   En las  líneas que
+    siguen he omitido lo referente  a esta última partícula, inexistente fuera
+    del  mundo anglosajón.   No  obstante si  en  nuestra base  de datos  debe
+    introducirse algún nombre propio  que incluya dicha partícula, normalmente
+    esta será reconocida por \btx- y su presencia no alterará las reglas que a
+    continuación se exponen.}. Para ello se siguen las siguientes reglas:
+
+  \begin{enumerate}[1ª.]
+
+  \item Si  el texto introducido  consta de una  sola palabra, se  asignará al
+    apellido.
+
+  \item \label{Regla:2} Si consta de dos o más palabras, se considerará que la
+    última es el apellido y el resto es el nombre de pila.  Esta regla se basa
+    en  que fuera  de la  Península Ibérica  (y paises  de  tradición cultural
+    ibérica), es usual tener un solo apellido y varios nombres de pila.
+
+  \item En el  caso de que el  apellido conste de varias palabras  y alguna de
+    las palabras  interiores estuviera escrita con  minúsculas, se considerará
+    que tal palabra es una partícula  que separa el nombre del apellido por lo
+    que se asignará al apellido todo lo que esté detrás de tal partícula, y al
+    nombre  lo  que  esté  antes.   Y así,  por  ejemplo,  \btx-  interpretará
+    correctamente el nombre
+
+    {\small\verb|Miguel de Cervantes Saavedra|}
+
+    siempre y cuando escribamos el ``de'' y lo hagamos en minúsculas.  Pero si
+    escribimos:
+
+    {\small
+\begin{verbatim}
+Miguel Cervantes Saavedra
+Miguel De Cervantes Saavedra
+miguel de cervantes saavedra
+\end{verbatim}
+    }
+
+    como  \btx-   no  podrá  identificar   la  partícula  aplicará   la  regla
+    \ref{Regla:2}, y  considerará que ``Saavedra''  es el apellido y  el resto
+    nombre  propio\footnote{Por   ello  si  queremos  que   en  nuestra  lista
+      bibliográfica las  partículas se impriman en mayúsculas,  pero que \btx-
+      las  reconozca  correctamente,  habría  que  escribir:  ``\texttt{Miguel
+        \{\textbackslash uppercase\{d\}e\} Cervantes Saavedra}''.}.
+
+  \item Si solo conocemos el apellido,  y este consta de varias palabras, para
+    evitar que  las primeras se  asignen al nombre  de pila, hay  que encerrar
+    todo el nombre  entre llaves (además de las  delimitadoras del campo). Por
+    ejemplo:
+
+    {\small\verb|author = "{Ortega y Gasset}",|}
+
+  \item Si en  un nombre se usa  una coma, \btx- asignará al  apellido todo lo
+    que esté antes  que la coma, y  al nombre propio todo lo  que esté detrás.
+    Esta regla prevalece sobre todas las anteriores.
+
+  \end{enumerate}
+
+  Para nombres  españoles, con dos apellidos,  lo más seguro es  usar una coma
+  entre  el  apellido  y  el  nombre  para impedir  que  \btx-  realice  malas
+  interpretaciones. Porque  aunque en ocasiones la partícula  nos puede ayudar
+  (como en ``Miguel de Cervantes Saavedra'') la mayoría de los nombres carecen
+  de partícula, y  en muchas ocasiones la partícula  produciría un error, como
+  en ``Félix Lope de Vega y Carpio''.
+
+\item[Booktitle:] Es el título de un libro, parte del cual está siendo citado.
+  Se usa, por lo  tanto en las referencias que sirven para  citar una parte de
+  un libro que  tenga un título distinto del título del  libro, es decir: \ltr
+  InCollection- e \ltr InProceedings-. Este campo también está presente en las
+  referencias de tipo \ltr Proceedings-, aunque en ellas se usa exclusivamente
+  para las referencias cruzadas (véase la sección \ref{sec:refer-cruz-entre}).
+  A este  campo le son  de aplicación las  reglas que más adelante  se exponen
+  sobre el campo \ltr title-.
+
+\item[Chapter:] Contiene  un número de capitulo, sección  o unidad estructural
+  de un  libro. Se usa en las  referencias de tipo InBook  e InCollection para
+  identificar una parte de un libro.
+
+\item[Crossref:]  Contiene una  etiqueta  en  la base  de  datos para  generar
+  referencias cruzadas internas (véase la sección \ref{sec:refer-cruz-entre}).
+
+\item[Edition:] Se  trata del  número de  edición de un  libro. Es  siempre un
+  campo opcional;  y de hecho sólo suele  rellenarse cuando no se  trata de la
+  primera edición.  Los  estilos estándar presuponen que se  escribirá con una
+  palabra en mayúsculas  (y en inglés).  Por ejemplo  ``Second'', aunque si se
+  escribe  en español  (``Segunda''),  o  con un  ordinal  expresado en  forma
+  numérica (``2ª''),  no pasa nada\footnote{En los estilos  estándar detrás de
+    este campo se  añade la palabra ``edition'' y,  si están españolizados, la
+    palabra ``edición'', por ello no  conviene usar directamente un número que
+    no sea un  ordinal, ya que entonces la  referencia contendría la expresión
+    ``2  edición'', que  no  es correcta.}.   Lo  que sí  es importante,  para
+  generar listas bibliográficas consistentes, es que siempre lo escribamos del
+  mismo modo.
+
+\item[Editor:]  Este  campo  ya  ha  sido mencionado  a  propósito  del  campo
+  ``author''.  El editor  de un libro es el que, sin  ser su autor propiamente
+  dicho, lo impulsa y hace nacer.  Esta figura es importante hasta el punto de
+  que sobre  él recae  la \emph{autoría} (a  efectos de  la base de  datos) en
+  determinado tipo de  obras como puede ser una  antología, un estudio crítico
+  de alguna obra  antigua, etc. Por ejemplo: una edición  crítica de la poesía
+  barroca española, o el conocido ``\emph{Las mil mejores poesías de la lengua
+    castellana}''.  Las reglas relativas a  este campo son similares a las del
+  campo ``author''.
+
+\item[Howpublished:] Este campo se usa  en las referencias de tipo ``Booklet''
+  y ``Misc'' que recogen libros que no han sido publicados por una editorial o
+  institución  ``normal''. En  este  campo  puede indicarse  cómo  se llegó  a
+  publicar la obra de que se trate. La primera palabra debe ir en mayúsculas.
+
+\item[Institution:] Este campo existe  exclusivamente en los informes técnicos
+  (referencias \ltr TechReport-)  y recoge el nombre de  la institución que ha
+  financiado el informe de que se trate.
+
+\item[Journal:]  Para artículos publicados  en revistas  este campo  recoge el
+  nombre  de la  revista.   En determinados  campos  del conocimiento  existen
+  abreviaturas  estándar para  las revistas  más conocidas,  por lo  que puede
+  usarse la abreviatura  en lugar del nombre completo de  la revista. Sobre el
+  uso  de   abreviaturas  en   los  ficheros  \tpf   bib-  véase   la  sección
+  \ref{sec:uso-de-abreviaturas}.
+
+\item[Key:]  Está  disponible  como  campo  opcional en  todos  los  tipos  de
+  referencias.  Se usa en relación con la generación de etiquetas, en aquellos
+  estilos en los que estas se generan  a partir del nombre del autor, como por
+  ejemplo ocurre en el estilo \ltr  alpha-. En tales casos, el valor del campo
+  \ltr key- será  usado para la generación de la etiqueta  si no consta ningún
+  valor para el campo \ltr author-,  incluso aunque si conste algún valor para
+  alguno de  los campos que  en ciertos tipos  de referencias pueden  suplir a
+  dicho campo (véase  lo que, al explicar el campo \ltr  author- se dijo sobre
+  la autoría, en pág.  \pageref{sec:la-autoria-de}).
+
+\item[Month:] En  artículos de revista se usa  para designar el mes  en el que
+  salió el número que contiene dicho artículo. En otro tipo de trabajos el mes
+  en el que  fueron publicados o terminados (para  trabajos no publicados). La
+  documentación  oficial de  \btx- recomienda  introducir este  campo mediante
+  unas abreviaturas estándar en inglés\footnote{\label{meses}Se trata de: \ltr
+    jan-, \ltr  feb-, \ltr mar-, \ltr  apr-, \ltr may-, \ltr  jun-, \ltr jul-,
+    \ltr aug-,  \ltr sep-, \ltr  oct-, \ltr nov-  y \ltr dec-.}, en  cuyo caso
+  usando la abreviatura,  no habría que usar delimitadores  para el campo (por
+  las  razones que  se explican  cuando  se habla  de las  abreviaturas en  la
+  sección \ref{sec:uso-de-abreviaturas}).
+
+  En teoría  aquí ocurre igual  que en el  campo \ltr author-, respecto  de la
+  partícula ``and'' usada para separar entre  sí a los distintos autores, y es
+  que aunque hayamos introducido el  mes en inglés (o mediante una abreviatura
+  del nombre inglés),  luego, usando el estilo bibliográfico  correcto, en las
+  referencias que  se inserten en  nuestros documentos aparecerá el  nombre en
+  español.  Aunque, a  diferencia de lo que ocurre con  el campo \ltr author-,
+  si aquí introducimos  la información directamente en español,  no se produce
+  ningún error.
+
+\item[Note:] Cualquier tipo de información adicional que no tenga cabida en el
+  resto de  los campos\footnote{Yo lo he  usado, por ejemplo,  para recoger el
+    nombre de los  traductores (en traducciones), o en  ediciones que han sido
+    actualizadas por  personas distintas del  autor original, para  recoger el
+    nombre de estos  últimos, o en documentación electrónica,  para recoger la
+    dirección  de Internet  donde se  encuentra.  Aunque  para esto  último es
+    preferible  usar un  campo adicional  de  nombre \ltr  url-, pues  existen
+    varios estilos  no estándar  para \btx- que  preven la existencia  de este
+    campo  y son  capaces de  formatearlo correctamente.   Incluso  el paquete
+    makebst es  capaz de generar  automáticamente un estilo  bibliográfico que
+    reconozca  este  campo.  Véase  la  sección  \ref{sec:makebst}.}.  En  los
+  estilos bibliográficos estándar el contenido  de este campo se transcribe al
+  final de la referencia y su primera palabra debería empezar en mayúsculas.
+
+\item[Number:] Puede  tener distintos  significados. En los  informes técnicos
+  recoge el número de informe de que  se trate. En artículos de revista se usa
+  en  revistas   cuyos  distintos  ejemplares  se   identifiquan  mediante  un
+  \emph{número}, o mediante  un número y un volumen. En libros  sólo se usa si
+  el libro forma parte de una serie o colección. En los registros de tipo \ltr
+  Book- y  \ltr Proceedings-  (así como en  sus derivados: \ltr  InBook-, \ltr
+  InCollection-  e \ltr  InProceedings-) el  contenido de  este campo  sólo es
+  tomado en consideración si el campo \ltr volume- se ha dejado en blanco.
+
+\item[Organization:]  La  organización  que  financia una  conferencia  o  que
+  publica un manual.  En los registros de tipo \ltr Manual- este campo designa
+  la \emph{autoría} si \ltr author- carece de contenido.
+
+\item[Pages:]  Se usa  en artículos  y en  partes de  libro para  designar las
+  páginas concretas en  las que un trabajo se  encuentra. Los estilos estándar
+  de \btx- esperan  que se pongan aquí las páginas  inicial y final, separadas
+  por uno o dos guiones.  De  hecho estos estilos convierten el guión sencillo
+  en  uno doble,  que es  el utilizado  en \ltx-  para designar  intervalos de
+  páginas. Si se quiere indicar sólo la primera página, se utiliza el carácter
+  ``+''  que significa  ``desde esa  página en  adelante''.  Como  los estilos
+  estándar  suponen  que  se  trata  de   más  de  una  página,  en  la  lista
+  bibliográfica final,  a veces al número  aquí puesto se le  añade la palabra
+  ``páginas'' (\emph{pages}), o la abreviatura ``págs.'' (pp) en plural.
+
+\item[Publisher:] La  editorial encargada de  la publicación de un  libro.  Su
+  contenido suele complementarse con el del campo \ltr address-.
+
+\item[School:]  Nombre de  la Escuela,  Facultad o  Instituto en  donde  se ha
+  confeccionado   un   trabajo  académico   (tesis   doctoral   o  tesina   de
+  licenciatura).
+
+\item[Series:]  En libros  que  forman parte  de  una colección,  se usa  para
+  recoger el nombre de la misma.
+
+\item[Title:]  Es  un  campo  presente  en  todos  los  tipos  de  referencias
+  bibliográficas, y es  siempre obligatorio (salvo en las  referencias de tipo
+  \ltr Misc-).  Designa  el título del trabajo al  que nos estamos refiriendo,
+  salvo  en las referencias  tipo \ltr  InBook-, donde  designa el  título del
+  libro del que forma parte el capítulo  o rango de páginas al que nos estamos
+  refiriendo.
+
+  En teoría  los estilos  bibliográficos estándar \emph{normalizan}  (o pueden
+  normalizar) el uso de las mayúsculas y minúsculas en los títulos. Y por ello
+  en las referencias generadas a partir de nuestra base de datos no siempre se
+  escribirán  los títulos  tal y  como  aparecen en  la base  de datos.   Para
+  preservar  una letra  en mayúsculas  hay que  encerrarla entre  llaves.  Las
+  llaves pueden  ponerse también alrededor de  una o varias  palabras. Esto es
+  especialmente importante si  en el título se usan comandos  de \ltx-, ya que
+  en ellos una  alteración de las mayúsculas y minúsculas  se traduciría en un
+  error.
+
+\item[Type:] Este campo existe en \ltr InBook-, \ltr InCollection-\footnote{La
+    documentación oficial de \btx- y los  textos que he leído coinciden en que
+    en los registros  \ltr InCollection- el campo \ltr  type- es opcional. Las
+    pruebas que  yo he hecho  me llevan a  pensar que en estos  registros este
+    campo  es  ignorado.   },  \ltr  MasterThesis-,  \ltr  PhdThesis-  y  \ltr
+  TechReport-.   En los tres  últimos tipos  mencionados los  estilos estándar
+  añaden a la referencia, como  texto aclaratorio, el nombre del registro. Por
+  ejemplo: en una tesis doctoral, se escribe: ``\emph{Tesis doctoral}''. Si en
+  el  campo \ltr  type- hay  algún texto,  se usará  este texto  en  lugar del
+  predeterminado.  En  los registros  \ltr InBook-, aunque  por defecto  no se
+  escribe ningún texto, sí  se escribirá lo que se diga en  este campo. Por lo
+  tanto  aquí puede  escribirse una  pequeña aclaración  respecto del  tipo de
+  trabajo de que se trata, como: ``Conferencia'', ``Disertación'', etc.
+
+\item[Volume:] En artículos  de revista se usa para indicar en  qué tomo de la
+  revista se ha  publicado dicho artículo.  En libros que  formen parte de una
+  serie, para  indicar el tomo o volumen,  dentro de la serie  en cuestión. En
+  este último  caso si  se da algún  valor al  campo \ltr volume-  los estilos
+  estándar ignorarán el contenido del campo \ltr number-.
+
+\item[Year:] El año de la edición  del libro o de publicación del artículo. Es
+  otro de los  datos presentes (de forma obligatoria u  opcional) en todos los
+  tipos  de  registros.   Hay  incluso  estilos bibliográficos  en  donde  las
+  referencias se ordenan por  el valor de este campo, y las  citas en el texto
+  lo incluyen también.
+
+\end{description}
+
+\subsubsection{Algunos consejos sobre tipos de registros y campos}
+\label{sec:algun-cons-sobre}
+
+Cuando  empezamos a  manejar  \btx- la  gran  cantidad de  tipos de  registros
+existentes (catorce  en total) puede abrumar.  A  continuación expongo algunos
+consejos, dictados por la experiencia, sobre cómo debemos proceder.
+
+\begin{enumerate}
+
+\item  Hay  tres  tipos  de  referencia básica:  artículos  de  revista  (\ltr
+  article-), libros completos (\ltr book-) y partes de libro.  Para las partes
+  de libro a su  vez hay tres posibilidades: Si la parte  se identifica por un
+  número de sección  o de páginas, la referencia correcta  es \ltr InBook-, si
+  se identifica  por un título,  yo distingo, a  su vez, según cada  parte del
+  libro tenga un  autor distinto, en cuyo caso  utilizo \ltr InProceedings-, o
+  todo el  libro pertenezca al  mismo autor, en  cuyo caso prefiero  usar \ltr
+  InCollection-. Ello  es porque no me  tomo demasiado en serio  el nombre del
+  tipo de referencia, y atiendo más bien al contenido de los campos\footnote{Y
+    no hay que escandilarse por ello.   El propio autor de \btx- recomienda en
+    \cite{patashnik88}  no  tomarse  excesivamente  en serio  los  nombres  de
+    registros y campos.  }.
+
+\item Tampoco hay  que tomarse demasiado en serio el nombre  de los campos. En
+  ocasiones puede ser  conveniente, por ejemplo, incluir la  ciudad de edición
+  junto con  el campo  reservado a la  editorial, y  en otros casos  puede ser
+  preferible  usar para ello  el campo  \ltr address-.   Lo importante  es que
+  seamos consistentes en nuestras decisiones.
+
+\item La distinción entre campos  obligatorios y opcionales es importante sólo
+  para  confirmarnos que  hemos elegido  el tipo  de registro  adecuado.  Pero
+  tampoco es una tragedia que en  un caso concreto, algún campo obligatorio se
+  quede sin rellenar.
+
+\item Para la información que consideremos  relevante pero para la que no haya
+  ningún campo que  la haya previsto, podemos usar el  campo \ltr note-.  Pero
+  también podemos usar  campos específicos creados por nosotros.   En tal caso
+  los estilos  estándar de \btx- la  ignorarán, pero podremos  crear un estilo
+  bibliográfico propio que la tenga en cuenta. Yo, por ejemplo, utilizo muchas
+  traducciones, y  estimo que  el nombre del  traductor es un  dato importante
+  para la  referencia.  Empecé usando para  ello el campo \ltr  note-, pero al
+  final diseñé un campo opcional  llamado \ltr traductor-.  Sobre la escritura
+  de estilos bibliográficos propios, véase  la última parte de este documento.
+  Aunque cuando  decidamos crear un campo  adicional, si el tipo  de datos que
+  queremos incluir en él es relativamente corriente, puede merecer la pena que
+  antes de bautizar  el campo, nos demos un paseo por  Internet; porque es muy
+  posible que  alguien haya  ya sentido la  necesidad de recoger  tales datos,
+  haya creado  ese campo y, lo que  es más importante, haya  escrito un estilo
+  bibliográfico que sepa qué hacer con él.
+
+\item  También   es  interesante  la  creación  de   campos  adicionales  para
+  información que  es importante para  nosotros tener recopilada, pero  que no
+  importa a los  lectores de nuestros documentos y no  tiene por qué incluirse
+  en las  referencias bibliográficas  generadas. Por ejemplo  yo uso  para los
+  libros un campo  llamado \ltr tejuelo- en el que  almaceno la ``etiqueta'' o
+  ``tejuelo'' asignada  a determinado libro en  la biblioteca de  mi centro de
+  trabajo, lo que me ayuda a localizar físicamente el libro con rapidez.
+
+\item Por último, aunque he señalado que no hay que tomarse demasiado en serio
+  ni  los nombres  de los  tipos de  registro,  ni los  de los  campos, ni  su
+  naturaleza obligatoria  u opcional, y  he añadido que puede  ser interesante
+  crear campos propios,  todo ello no debe llevarnos a  diseñar y escribir una
+  base de  datos que sólo nosotros  seamos capaces de entender  y utilizar. El
+  sentido  último de  las herramientas  de \ltx-  (y en  general  del software
+  libre) es el de \emph{compartir} el trabajo:  Que lo que ya ha sido hecho no
+  tenga por qué repetirse  (si está bien hecho y el autor  autoriza su uso por
+  otros).  Cuando empezamos  a escribir nuestra base de datos  no hay forma de
+  saber si terminará siendo tan importante que merezca la pena compartirla con
+  otros y por  ello es mejor empezar  a escribirla con la mente  puesta en que
+  tal vez en el futuro debamos compartirla.
+
+\end{enumerate}
+
+\subsection{Otras cuestiones relativas a los ficheros \tpf bib-}
+\label{sec:otras-cuest-relat}
+
+\subsubsection{Uso de abreviaturas y concatenación de cadenas}
+\label{sec:uso-de-abreviaturas}
+
+En un  fichero \tpf bib- es  posible definir abreviaturas  que simplifiquen la
+escritura  de los  registros y  eviten  errores.  Para  usar una  abreviatura,
+primero hay que definirla de acuerdo con el siguiente formato:
+ 
+\verb|@String{Abreviatura = "Texto sin abreviar"}|
+
+El nombre  de la abreviatura  debe empezar por  una letra y no  puede contener
+caracteres en blanco ni ninguno de los siguientes caracteres:
+
+\verb|" # % ' ( ) , = { }|
+
+El texto  sin abreviar  se debe especificar  entre comillas.  Las  llaves para
+delimitar el contenido de ``\texttt{@String}'' son obligatorias.
+
+La definición se  puede hacer en cualquier lugar del fichero  \tpf bib- que no
+sea el interior de un registro (o de algún otro elemento admitido en este tipo
+de ficheros). El único  requisito en este punto es el de  que la definición de
+una  abreviatura debe  hacerse \emph{antes}  de que  ésta sea  usada  en algún
+campo.
+
+Las abreviaturas  no pueden usarse  para los nombres  de campo o  de registro,
+sino  exclusivamente en el  contenido del  campo. Y  como las  abreviaturas no
+pueden estar encerradas  dentro de los delimitadores de  campo, cuando todo el
+contenido del campo  es una abreviatura, ese campo  no requerirá delimitadores
+de contenido. Así en el siguiente ejemplo:
+
+{\small
+\begin{verbatim}
+@STRING{TeX = "The {T}e{X} {B}ook"}
+
+@Book{eijkhout,
+   author = {Victor Eijkhout},
+   title = {TeX by topic},
+   publisher = {Addison Wesley},
+   year = 1992,
+}
+
+@Book{knuth,
+   author = {Donald E. Knuth},
+   title = TeX,
+   publisher = {Addison Wesley},
+   year = 1986,
+}
+\end{verbatim}
+}
+
+\noindent Hemos definido la abreviatura  ``TeX'' y dos registros, en el título
+del primero de ellos aparece la cadena ``TeX'', pero \btx- no la toma como una
+abreviatura,  porque  tal  cadena  se  encuentra dentro  de  unas  llaves  que
+delimitan el contenido de un campo.  Por el contrario, en el segundo registro,
+el texto ``TeX'' usado como contenido  del campo título, es tomado como un uso
+de la abreviatura, dado que no  está dentro de ningún tipo de delimitadores de
+contenido  de campo\footnote{En  el  ejemplo he  escrito  para la  abreviatura
+  ``TeX'',  pero,  como \btx-  no  distingue  entre  mayúsculas y  minúsculas,
+  habríamos obtenido el mismo resultado escribiendo ``TEX'' o ``tex'' tanto en
+  la  definición  de la  abreviatura  como más  tarde  cuando  ésta es  usada.
+  Podríamos también haber definido ``TEX'' y luego usar ``tex'' o ``TeX''.  }.
+
+Si  la abreviatura  no cubre  todo el  contenido del  campo,  entonces debemos
+escribir  entre  delimitadores  normales  el  contenido  no  cubierto  por  la
+abreviatura, y \emph{concatenar} dicho contenido con el de la abreviatura.
+
+En los  ficheros \tpf  bib- el  carácter para concatenar  cadenas de  texto es
+``\#''.  Este  carácter permite concatenar  abreviaturas entre sí,  cadenas de
+texto entre  sí y abreviaturas  con cadenas de  texto.  Por ejemplo, si  en el
+fichero  \tpf bib-  de nuestro  anterior ejemplo  tuviéramos un  libro llamado
+``\emph{Comentarios a `The TeX Book'  de Knuth}'', y quisiéramos aprovechar la
+abreviatura  que  hemos  definido  para  ``\emph{The  TeX  Book}'',  podríamos
+escribir el campo \ltr title- de dicho libro de la siguiente manera:
+
+\verb|title = {Comentarios a `} # TeX # {' de Knuth},|
+
+Hay tipos de  datos, como el nombre de las revistas  científicas, para los que
+es  muy corriente  el uso  de  abreviaturas.  De  hecho en  ciertos campos  de
+conocimiento  circulan  ficheros  en   el  que  se  recogen  las  abreviaturas
+corrientemente  usadas para  las  revistas más  importantes.   En tales  casos
+podemos usar dichos ficheros simplemente  indicando su nombre en la orden \cmd
+bibliography-  antes del  nombre de  nuestra  base de  datos bibliográfica,  y
+separando ambos nombre por una coma.
+
+La siguiente línea, por ejemplo, provocaría que ``\texttt{MiBiblio.bib}'' (que
+cabe  suponer que  es nuestra  base de  datos) se  concatenara con  el fichero
+distribuido  por  la \emph{American  Mathematical  Society}  que contiene  las
+abreviaturas habitualmente usadas para las revistas matemáticas:
+
+\verb|\bibliography{mrabbrev,MiBiblio}|
+
+En  los estilos estándar  de \btx-  hay ya  varias abreviaturas  definidas por
+defecto: Están definidos los nombres de los meses del año en inglés (véase las
+abreviaturas  que  mencioné  al  hablar  del  campo \ltr  month-  en  la  nota
+\ref{meses}), así como  el nombre de varias revistas dedicadas  al campo de la
+informática\footnote{Las  abreviaturas definidas  en el  estilo plain  son las
+  siguientes:  acmcs (ACM  Computing Surveys),  acta (Acta  Informatica), cacm
+  (Communications  of   the  ACM),  ibmjrd   (IBM  Journal  of   Research  and
+  Development),  ibmsj (IBM  Systems  Journal), ieeese  (IEEE Transactions  on
+  Software  Engineering), ieeetc  (IEEE Transactions  on  Computers), ieeetcad
+  (IEEE  Transactions on  Computer-Aided Design  of Integrated  Circuits), ipl
+  (Information Processing  Letters), jacm (Journal of the  ACM), jcss (Journal
+  of  Computer and System  Sciences), scp  (Science of  Computer Programming),
+  sicomp  (SIAM Journal  on  Computing), tocs  (ACM  Transactions on  Computer
+  Systems), tods (ACM Transactions on Database Systems), tog (ACM Transactions
+  on Graphics),  toms (ACM Transactions on Mathematical  Software), toois (ACM
+  Transactions  on Office  Information Systems),  toplas (ACM  Transactions on
+  Programming Languages and Systems), tcs (Theoretical Computer Science)}.
+
+\subsubsection{Referencias cruzadas entre registros}
+\label{sec:refer-cruz-entre}
+
+En los ficheros \tpf bib- se admiten dos tipos de referencias cruzadas:
+
+\begin{enumerate}
+
+\item Usando el comando de \ltx- \cmd cite-.
+
+\item Mediante el campo \ltr crossref-.
+
+\end{enumerate}
+
+En cuanto al uso  de \cmd cite-, podemos usarlo dentro de  un campo para hacer
+referencia a otro  registro. Normalmente esto se hace en  el campo \ltr note-,
+pero se puede hacer en cualquier otro.  Esto provocará que al citar en nuestro
+documento \ltx- una  referencia que a su vez cita a  otra, ambas se consideren
+citadas en  el documento,  y se incluyan  las dos  en la lista  de referencias
+bibliográficas\footnote{Este es  uno de los  casos en los que  \btx- requerirá
+  una compilación  adicional. Porque  el comando \cmd  cite- incorporado  a un
+  registro bibliográfico no será compilado  por \ltx- hasta que se compila una
+  versión  que incorpore el  contenido del  fichero \tpf  bbl-.  E  incluso es
+  posible  que al incorporar  esta nueva  cita, sea  preciso, tras  la segunda
+  ejecución de \ltx-, ejecutar de nuevo \btx-.}.
+
+Pero también  es posible  usar referencias cruzadas  de otra manera:  para que
+\btx- sepa  que el valor  de ciertos campos  que normalmente forman  parte del
+contenido de un determinado tipo de registro, pero que en un registro concreto
+no  han  sido incluidos,  debe  ser tomado  de  otro  registro distinto.   Por
+ejemplo, si tenemos un libro homenaje a cierto autor, en el que varios autores
+han  colaborado, cada uno  de ellos  con un  artículo.  Si  quisiéramos volcar
+todos estos artículos a nuestra base de datos, podríamos:
+
+\begin{enumerate}
+
+\item Crear  tantos registros  como artículos  haya e incluir  en cada  uno de
+  ellos todos los  datos requeridos, gran parte de  los cuales serán idénticos
+  en todos los registros.
+
+\item  Abreviar  mediante  referencias  cruzadas,  para  los  datos  idénticos
+  escribirlos una sola vez.
+
+\end{enumerate}
+
+Para seguir el segundo procedimiento, deberíamos empezar por crear un registro
+del  tipo ``Proceedings''  para el  libro  homenaje en  sí mismo  considerado,
+rellenar  en él  el valor  de todos  los  campos que  podamos, y  luego en  el
+registro correspondiente a cada uno  de los artículos extraidos de dicho libro
+(que serían referencias de tipo  \ltr InProceedings-), usar como valor para el
+campo \ltr  crossref-, el de  la clave que  hayamos asignado al  registro \ltr
+Proceedings-\footnote{De  hecho, si  lo pensamos  bien, el  único  sentido que
+  tiene la presencia  del campo \ltr booktitle- en los  registros de tipo \ltr
+  Proceedings- es el de  que este campo se use para llenar  el campo del mismo
+  nombre en los registros \ltr InProceedings- que apunten a este.}.
+
+El efecto de todo ello será que:
+
+\begin{enumerate}
+
+\item En los registros \ltr InProceedings- que escribamos para cada uno de los
+  artículos  contenidos en el  libro, podremos  no incluir  los campos  que ya
+  están en el registro correspondiente  al libro general, pues al apuntar \ltr
+  Crossref- al registro  correcto, \btx- sabrá que los datos  que faltan en el
+  primer registro  deben ser tomados del  segundo. Esto, además  de reducir el
+  tamaño de  la base de  datos, y ahorrar  tiempo para la introducción  de los
+  mismos,  contribuye  a  garantizar  que  todas las  veces  que  estos  datos
+  aparezcan, estén escritos exactamente igual.
+
+\item Si en un documento \ltx- citamos al menos dos artículos que apunten a un
+  mismo registro, automáticamente se incluirá en la lista final de referencias
+  bibliográficas, además de los trabajos directamente citados por nosotros, el
+  registro correspondiente al libro que los contiene.
+
+\end{enumerate}
+
+Para  que lo  anterior  funcione  correctamente, es  preciso  que el  registro
+\emph{referenciado}  mediante  el  campo  \ltr  crossref-  (el  registro  \ltr
+Proceedings-) se encuentre en la base de datos \emph{después} de los registros
+referenciadores (los registros \ltr InProceedings-).
+
+Los estilos estándar  de \btx- admiten referencias cruzadas  en los siguientes
+casos:
+
+\begin{enumerate}
+
+\item  Los registros  de tipo  \ltr InProceedings-  pueden hacer  referencia a
+  registros \ltr Proceedings- o \ltr Book-.
+
+\item  Los registros  de tipo  \ltr  InCollection- pueden  hacer referencia  a
+  registros \ltr Book-.
+
+\end{enumerate}
+
+\subsection{Herramientas para manejar ficheros \tpf bib-}
+\label{sec:herr-para-manej}
+
+Existen varias herramientas para la creación y mantenimiento de bases de datos
+de  \btx- cuya  utilidad fundamental  es  la de  asegurarse de  que todos  los
+registros están correctamente  escritos y de que no  hemos cometido errores ni
+en el nombre del tipo del registro ni en el de los campos.
+
+Como  yo  trabajo  exclusivamente  en  sistemas Linux,  en  este  apartado  me
+concentraré en  herramientas que funcionen  en tales sistemas.   Para sistemas
+MS-DOS, Mac-OS  o Microsoft  Windows existen otras  herramientas que yo  no he
+probado y  sobre las que, en  consecuencia, no puedo  opinar. Existen asimismo
+herramientas  escritas  en  java   que,  en  teoría,  funcionan  en  cualquier
+plataforma, aunque yo no las he probado. He leído buenos comentarios sobre dos
+de ellas: ``jbibtexmanager''  y ``jabref'', ambas son fáciles  de localizar en
+Internet.
+
+\subsubsection{Herramientas gráficas}
+\label{sec:herr-graf}
+
+
+Existen varias  herramientas gráficas que permiten trabajar  con ficheros \tpf
+bib- mediante  ventanas, botones, barras de herramientas,  etc. Las utilidades
+ofrecidas  por estas  herramientas  son bastante  similares.   Entre ellas  he
+probado (porque están disponibles directamente en Debian):
+
+\begin{description}
+
+\item[pybliographer:]  Posiblemente  sea la  más  completa  de  todas las  que
+  conozco (aunque admito que no es la que más me gusta, pues es muy difícil de
+  manejar  sin  el  ratón, y  yo  tengo  alergia  al  ratón). Frente  a  otras
+  herramientas ofrece las siguientes ventajas: que funciona también en modo de
+  consola, que además del formato  \btx- puede manejar otros formatos de bases
+  de datos bibliográficas  y, lo que es más importante:  es capaz de convertir
+  bases de datos desde unos formatos a otros.
+
+\item[Gbib:] Es  mi herramienta favorita  en este grupo\footnote{Lo que  no es
+    mucho decir,  pues yo soy  usuario de  GNU Emacs (del  que me ocupo  en la
+    próxima  sección).}.  Forma  parte  del proyecto  Gnome,  aunque no  suele
+  instalarse por defecto.  Posiblemente  su principal inconveniente esté en el
+  hecho de que no permite controlar el  tipo de codificación en el que hay que
+  grabar  el  fichero,  sino  que  éste  es  guardado  automáticamente  en  la
+  codificación  preestablecida para  el sistema\footnote{Esto  puede ocasionar
+    una tediosa labor  de \emph{reparación}. Sobre todo si  se tiene en cuenta
+    que hasta hace poco la codificación estándar para sistemas Linux españoles
+    era  \ltr  latin1-   o  \ltr  latin15-  y  en   los  últimos  tiempos  las
+    distribuciones  empiezan a  migrar a  \ltr utf8-.   De modo  que si  en un
+    sistema  instalado recientemente abrimos  una base  de datos  escrita hace
+    algún  tiempo, introducimos  cambios  en  ella y  los  guardamos, cabe  la
+    posibilidad de que, si no tenemos control sobre las codificaciones usadas,
+    todos  los  caracteres  no  anglosajones  del fichero  se  transformen  en
+    caracteres ininteligibles que luego habrá que restuarar a mano.  }, aunque
+  en realidad este  defecto es predicable de las  tres herramientas que recojo
+  en la presente sección.
+
+\item[Tkbibtex:] Una herramienta muy  parecida a las anteriores: permite crear
+  bases  de datos  nuevas,  abrir bases  existentes,  añadir registros,  hacer
+  búsquedas, etc. Apenas le he echado un vistazo.
+
+\end{description}
+
+\subsubsection{El modo \btx- en un editor de texto}
+\label{sec:el-modo-bibtex}
+
+Dado que  los ficheros \tpf  bib- son ficheros  de texto, otra  posibilidad es
+editarlos con algún editor de texto  que esté provisto de alguna extensión que
+facilite de alguna manera el trabajo con ellos.
+
+\subsubsection{Otras herramientas disponibles en sistemas linux}
+\label{sec:otras-herr-disp}
+
+Además de las indicadas  existen muchísimas otras herramientas disponibles.
+
+
+\section{Los estilos bibliográficos}
+\label{sec:los-estil-bibl}
+
+\subsection{Descripción de los estilos estándar de \btx-}
+\label{sec:los-estilos-estandar-1}
+
+\btx- se  acompaña de cuatro estilos  llamados \ltr plain-,  \ltr abbrv-, \ltr
+alpha- y \ltr unsrt-.  El estilo esencial es el primero, y los otros funcionan
+como él en todo salvo en uno o dos puntos concretos.
+
+A  continuación  describiré  estos  estilos atendiendo  exclusivamente  a  sus
+características  principales   y  sin  entrar  en   excesivos  detalles  (cuya
+descripción  con palabras,  por otra  parte, ocuparía  demasiado  espacio). Mi
+consejo para ver exactamente las características de cada uno de los estilos es
+escribir un  fichero \tpf bib- de prueba,  incluir un registro de  cada uno de
+los tipos admitidos, llenar \emph{todos} los campos posibles de cada registro,
+e incluir  dicha base de datos  en un documento  de prueba, en el  que hayamos
+incluido un comando \cmd nocite\{*\}-.
+
+En  la próxima explicación,  menciono varias  veces la  noción \emph{autoría}.
+Con  ella   me  quiero  referir  a  lo   que  ya  se  explicó   en  la  página
+\pageref{sec:la-autoria-de}.
+
+\begin{description}
+
+\item[Estilo ``plain''.] Sus características son:
+
+  \begin{enumerate}
+
+  \item La lista bibliográfica final se ordena alfabéticamente atendiendo a la
+    autoría, y si hubiera  más de una obra del mismo autor,  se toma en cuenta
+    al año de las mismas y  después el título. Si sigue habiendo igualdad tras
+    aplicar los criterios anteriores, el último criterio es el del orden en el
+    que  fueron citadas y,  para obras  citadas simultáneamente  mediante \cmd
+    nocite\{*\}-, el orden que tengan en la base de datos.
+
+  \item Las  obras incluidas en la  lista son numeradas  consecutivamente y el
+    número asignado a  cada una de ellas, entre corchetes,  se convierte en la
+    etiqueta identificativa de la misma que será impresa en el lugar en el que
+    se  encuentren  los  comandos  \cmd  cite- existentes  en  el  cuerpo  del
+    documento.
+
+  \item Los datos de los campos se incluyen completos.
+
+  \item Para ciertos campos se  añaden determinadas palabras o abreviaturas en
+    inglés.  Por ejemplo,  tras el contenido del campo  \ltr edition- se añade
+    la  palabra ``\emph{edition}'',  y hay  tipos de  registro en  los  que el
+    nombre del campo (en inglés) forma parte de la referencia.
+
+  \end{enumerate}
+
+\item[El  estilo ``abbrv'':] Es  idéntico al  estilo \ltr  plain- salvo  en el
+  hecho de que para ciertos datos se usan abreviaturas y así el nombre de pila
+  de  los autores  es sustituido  por  sus iniciales  y el  nombre de  ciertas
+  revistas  (que están  predefinidas  en el  estilo  y que  se  refieren a  la
+  informática) es sustituido  por su abreviatura.  Para la  mayor parte de los
+  usuarios,  que no  usan las  revistas predefinidas  en el  estilo,  la única
+  diferencia con \ltr  plain- es que del nombre propio del  autor sólo se usan
+  las iniciales.
+
+\item[El estilo ``alpha'':] Se distingue del estilo \ltr plain- exclusivamente
+  en el hecho de que la etiqueta de identificación de cada obra en la lista no
+  es  un  número,  sino un  texto  generado  automáticamente  a partir  de  la
+  \emph{autoría} de la  referencia, el año de publicación  y, en ocasiones, el
+  inicio del título\footnote{Como regla se  toman las tres primeras letras del
+    nombre del autor y las dos últimas cifras del año de publicación. En obras
+    con varios autores  se toma la inicial de los tres  primeros seguida de un
+    signo ``+'' en formato de superíndice,  si hay más de tres autores. Si con
+    estos criterios a  dos referencias se les asignara  la misma etiqueta, las
+    obras se  ordenan relativamente  entre sí, atendiendo  a los  criterios de
+    ordenación del  estilo \ltr plain-, y  a las etiquetas se  añade una letra
+    para  diferenciarlas entre  sí: una  ``a'' a  la primera,  una ``b''  a la
+    segunda, etc.}.  Asimismo la lista bibliográfica se ordena alfabéticamente
+  según las etiquetas asignadas, y el  comando \cmd cite- imprime, en el lugar
+  en el que se encuentre, la etiqueta asignada a la obra citada.
+
+\item[El estilo ``unsrt'':]  Es igual al estilo \ltr plain-  salvo en el hecho
+  de que en él la lista bibliográfica no se ordena alfabéticamente, sino según
+  el orden en  el que las distintas obras que aparecen  en ella fueron citadas
+  por  primera vez. En  este caso,  para las  obras incluidas  en la  lista de
+  referencias  mediante un  comando  \cmd nocite-  se  considerará que  fueron
+  citadas en el  lugar en el que  se encuentre tal comando. Y  para el comando
+  \cmd nocite\{*\}-, se usará el orden en el que las referencias se encuentren
+  en el fichero \tpf bib-, pero sólo para las referencias que no hubieran sido
+  citadas antes de \cmd nocite\{*\}-.
+
+\end{description}
+
+En  cuanto a  las  características concretas  de  formateo de  los campos  son
+similares en todos estos estilos. Los aspectos más llamativos son:
+
+\begin{enumerate}
+
+\item Se escribe  el nombre de pila antes  que el apellido, lo que  no deja de
+  ser chocante en aquellos casos en  los que la lista de referencias se ordena
+  alfabéticamente  a partir  de  los  apellidos (estilos  \ltr  plain- y  \ltr
+  abbrv-,  ya  que  ello   provoca  una  ordenación  alfabética  tomando  como
+  referencia, no  la primera  palabra de  cada párrafo, sino  la segunda  o la
+  tercera.
+
+\item Los distintos  elementos de la referencia se  separan mediante un punto.
+  Lo  que también  provoca problemas  cuando el  contenido de  un campo  no es
+  numérico y  no empieza con una  mayúscula, pues los estilos  sólo ajustan el
+  uso de las mayúsculas en el campo \ltr title-.
+
+\item  Todos los  campos aparecen  con letra  normal, salvo  el título  de los
+  libros y  trabajos académicos y el  nombre de las revistas,  que aparecen en
+  cursiva.
+
+\end{enumerate}
+
+\subsection{Estilos adicionales}
+\label{sec:estilos-adicionales}
+
+Junto con estos estilos estándar,  existen multitud de estilos disponibles. En
+la  CTAN  hay  varios  de   ellos  preparados  para  su  descarga,  y  algunas
+distribuciones    de   \ltx-    incluyen   por    defecto    ciertos   estilos
+adicionales\footnote{Por ello,  antes de buscar  estilos adicionales, conviene
+  que  nos  aseguremos  de  cuáles   son  los  estilos  incluidos  en  nuestra
+  distribución de  \ltx-. Lo que  se puede hacer por  distintos procedimientos
+  que  dependen  de  nuestra  concreta  instalación. A  falta  de  algún  otro
+  procedimiento específico, podemos buscar los ficheros de extensión \tpf bst-
+  existentes  en nuestro sistema;  o mejor:  los existentes  en alguno  de los
+  directorios  en los  que \btx-  busca los  ficheros de  estilo.  En  la nota
+  \ref{nota:cnf} se explica  cómo localizar cuáles son esos  directorios en un
+  sistema Unix/Linux.}.
+
+Entre los  estilos adicionales hay  algunos cuya instalación es  tan corriente
+que  son estilos  \emph{casi}  estándar.   Otros no  son  tan conocidos,  pero
+resultan  interesantes.  Muchos  de ellos  consisten exclusivamente  en  uno o
+varios estilos para \btx-, y  otros incluyen también un \emph{paquete} que hay
+que incluir en  el documento principal, mediante \cmd  usepackage-, para poder
+usar el estilo.
+
+No voy  a explicar todos los  estilos adicionales, porque  ello sería tedioso,
+sino exclusivamente los más conocidos e interesantes:
+
+\begin{description}
+
+\item[Apalike:] Este estilo  también fue escrito por Oren  Patashnik (el autor
+  de  \btx-).   Es  un  estilo  de  tipo  ``Autor-año''  y  para  su  correcto
+  funcionamiento, hay que cargar en  los documentos \ltx- el paquete del mismo
+  nombre que el estilo: \ltr apalike-.
+
+\item[Natbib:] Natbib es al mismo tiempo un estilo y un paquete, aunque quizás
+  en él  destaque más la parte  de paquete, por la  cantidad de modificaciones
+  que incorpora al funcionamiento del comando \cmd cite-.
+
+  Durante mucho tiempo  (hasta que conocí el trabajo de  unos compañeros de la
+  Universidad de  Murcia que han  diseñado \ltr flexbib-), he  considerado que
+  \ltr  natbib- era  la mejor  opción.  Permite  elegir entre  citas  del tipo
+  Autor-año  o citas numéricas.   Incluye versiones  adaptadas de  los estilos
+  estándar  (salvo  el  estilo  \ltr  alpha-) llamadas  \ltr  plainnat-,  \ltr
+  abbrvnat-  y  \ltr unsrtnat-;  añade  un campo  \ltr  usr-,  dispone de  una
+  estupenda documentación e incorpora numerosas modificaciones y mejoras en el
+  procedimiento de las citas.
+
+\end{description}
+
+
+\subsection{Cómo españolizar los estilos estándar}
+\label{sec:como-espan-algun}
+
+Los estilos  estándar de \btx- están  pensados para documentos que  se vayan a
+redactar en inglés y por lo  tanto usan partículas, palabras y abreviaturas en
+inglés. Para conseguir  que nuestra lista de referencias  figure totalmente en
+español, sin palabras en inglés, existen varios procedimientos.
+
+\begin{enumerate}
+
+\item Lo más  cómodo es usar algún  estilo o paquete que añada  a los paquetes
+  estándar la sensibilidad a \ltr babel-. Hay varios paquetes que hacen eso, y
+  más  cosas.  Podemos citar  ``\texttt{abstyles-babel}'', diseñado  por Tomás
+  Bautista y que es una adaptación  de los abstyles, para que sean sensibles a
+  \ltr babel-, o los paquetes \ltr babelbib- y \ltr flexbib-.
+
+\item Usar algún estilo diseñado para el idioma español. En Internet se pueden
+  localizar  algunos, y  en la  CTAN está  disponible el  estilo ``spain.bst''
+  basado en las indicaciones que sobre referencias bibliográficas se contienen
+  en el ``Diccionario de ortografía técnica'' de J.  Martínez de Sousa.
+
+\item Podemos  también generar nuestro propio  estilo bibliográfico, preparado
+  para trabajar en  un idioma concreto.  Al respecto estúdiese  lo dicho en la
+  sección \ref{sec:como-crear-estilos}.
+
+\item Por  último, podemos modificar el  fichero donde se  contiene algún otro
+  estilo, y  prepararlo para que  trabaje en español. Esta  última posibilidad
+  exige un  mayor conocimiento del  funcionamiento interno de  \btx-. Conviene
+  por  lo   tanto  aprender   muy  bien   lo  que  se   expone  en   la  parte
+  \ref{part:btx-avanzado} de este documento.
+
+\end{enumerate}
+
+Para esta  parte de la  guía, referida al  nivel básico, el  procedimiento más
+adecuado es el primero de los mencionados.
+
+\clearpage
+
+\part{\btx- intermedio}
+\label{part:btx-intermedio}
+
+\section{Generación automatizada de estilos bibliográficos}
+\label{sec:como-crear-estilos}
+
+Si ninguno  de los estilos bibliográficos  que acompañan a \btx-,  o que están
+disponibles en  la CTAN  nos convence, podemos  generar nuestro  propio estilo
+bibliográfico. Ello se  puede hacer escribiendo a mano  nuestro propio estilo,
+lo que exige  un profundo conocimiento del lenguaje usado  por los ficheros de
+estilo   (véase  la   parte  \ref{part:btx-avanzado}),   o   mediante  algunas
+herramientas  dirigidas  a  la   generación  de  ficheros  \tpf  bst-.   Estas
+herramientas, cuando  son ejecutadas, empiezan preguntando al  usuario por las
+características  que debe  tener el  nuevo  estilo (preguntas  en inglés,  ¡of
+course!), y,  con las  respuestas dadas,  se genera un  fichero \tpf  bst- que
+contiene el  nuevo estilo  o, lo que  es más  normal, un fichero  intermedio a
+partir del cual es posible generar el fichero \tpf bst-.
+
+La herramienta  que voy  a analizar  aquí funciona de  esa segunda  manera: el
+fichero intermedio tiene la extensión \tpf dbj- y la herramienta se llama \ltr
+makebst- y  forma parte del paquete <<\texttt{custom-bib}>>  (disponible en la
+CTAN).
+
+\subsection{Makebst}
+\label{sec:makebst}
+
+Makebst es un  programa para \TeX{} diseñado por Patrick  W.  Daly que permite
+generar ficheros bibliográficos personalizados.
+
+
+\subsection{Uso de los ficheros \tpf dbj-}
+\label{sec:uso-de-los}
+
+
+\section{Paquetes \ltx- relacionados con \btx-}
+\label{sec:paqu-ltx-relac}
+
+En la CTAN  existen numerosos paquetes que añaden utilidades a  \btx- o que de
+alguna manera amplían las posibilidades del sistema.
+
+No me es posible ocuparme de todos, y por ello seleccionaré los que me parecen
+más interesantes.
+
+\subsection{Referencias  bibliográficas  completas   en  el  lugar  donde  son citadas}
+\label{sec:refer-bibl-compl}
+
+\subsection{Generación de varias listas bibliográficas}
+\label{sec:el-paquete-bibunits}
+
+
+\subsection{Otros paquetes}
+\label{sec:otros-paquetes}
+
+
+\section{Otras cuestiones de interés}
+\label{sec:intr-comand-ltx}
+
+\subsection{El comando newblock y la opción openbib}
+\label{sec:la-opcion-de}
+
+\subsection{Elementos @preamble en los ficheros \tpf bib-}
+\label{sec:elementos-preamble}
+
+\subsection{Comentarios y registros desconocidos en los ficheros \tpf bib-}
+\label{sec:elementos-comment}
+
+
+\clearpage
+
+\part{\btx- avanzado}
+\label{part:btx-avanzado}
+
+\section{Los ficheros de estilo como programas}
+\label{sec:los-ficheros-de}
+
+Los ficheros  de estilo manejados  por \btx- son en  realidad \emph{programas}
+escritos en un  lenguaje innominado que informan a \btx-  acerca de cómo deben
+formatearse los  datos leídos de la base  de datos. Como el  lenguaje no tiene
+nombre oficial, cuando me  tenga que referir a él lo denominaré  BST que es la
+extensión utilizada  por los ficheros de estilo\footnote{Eso  no significa que
+  el lenguaje se llame BST. Simplemente,  si no uso un nombre para referirme a
+  él, en las próximas páginas tendría que emplear demasiados circunloquios.}.
+
+
+\subsection{Cuestiones generales}
+\label{sec:cuestiones-generales}
+
+\subsubsection{Reglas generales de sintaxis}
+\label{sec:reglas-generales-de}
+
+Las características generales de BST son las siguientes:
+
+\begin{enumerate}
+
+\item No se  distingue entre mayúsculas y minúsculas  \emph{para los elementos
+    del  lenguaje},  entendiendo  por  tales  los  nombres  de  los  comandos,
+  variables y funciones,  así como las cadenas de texto  usadas como patrón en
+  determinadas funciones  internas. Por el  contrario, en el contenido  de los
+  campos y de  las variables de texto, sí se distinguen  las mayúsculas de las
+  minúsculas.
+
+\item Los saltos de línea y los tabuladores se tratan como espacios en blanco,
+  y dos  o más  espacios en blanco  se tratan  como si fueran  sólo uno.   Y a
+  diferencia  de otros  lenguajes  no existe  ningún  carácter reservado  para
+  indicar el fin de  una instrucción: ni el punto y coma  (como en C o Pascal)
+  ni el  salto de línea (como  en Basic y  similares). Los saltos de  línea se
+  usan exclusivamente  para hacer más  comprensible para los seres  humanos lo
+  que una función hace.
+
+  No obstante lo anterior, de cara  a la información que \btx- emite cuando se
+  produce algún error (y que se almacena en el fichero \tpf blg- generado tras
+  la ejecución de \btx-), se recomienda:
+
+  \begin{enumerate}
+
+  \item  Insertar una  o  más líneas  en  blanco entre  la  definición de  dos
+    funciones.
+
+  \item No introducir líneas en blanco dentro de una función.
+
+  \end{enumerate}
+
+  Lo anterior,  por supuesto, no  se aplica al  contenido de las  variables de
+  texto. En ellas  todos los espacios en blanco son  relevantes y se distingue
+  entre espacios  en blanco  y tabuladores\footnote{Ello con  independencia de
+    que si  finalmente el contenido de  la variable termina  formando parte de
+    una lista de referencias insertada en un documento \tpf tex-, los espacios
+    en  blanco y  tabuladores existentes  en ella  reciban el  tratamiento que
+    \ltx- da  a tales caracteres.}. Asimismo  las constantes de  texto, que se
+  introducen entrecomilladas,  deben escribirse en  la misma línea:  entre las
+  comillas de apertura y cierre de una cadena de texto no puede haber un salto
+  de línea.
+
+\item Se puede hacer uso de las llaves para agrupar bloques de código.
+
+\item El carácter  ``\%'' está reservado para los comentarios:  Todo lo que se
+  escriba a la derecha del mismo, hasta el final de la línea, será ignorado.
+
+\end{enumerate}
+
+\subsubsection{Estructura de los programas BST}
+\label{sec:estructura-de-un}
+
+\subsection{Objetos del lenguaje BST}
+\label{sec:sintaxis-de-los}
+
+\subsubsection{La lista de datos}
+\label{sec:la-lista-de-2}
+
+\subsubsection{Variables y constantes}
+\label{sec:almac-de-los}
+
+\subsubsection{Funciones}
+\label{sec:funciones}
+
+\section{Conclusión: Otros usos de \btx-}
+\label{sec:otros-usos-de}
+
+\btx- fue diseñado para la gestión de la bibliografía. Pero la flexibilidad de
+formato de  los ficheros \tpf bib-, y  la potencia de los  ficheros de estilo,
+permiten extender sus posibilidades hasta  el punto de que podamos usarlo para
+muchas otras tareas.  Podemos considerar  a \btx- como una herramienta que nos
+permite insertar en  un documento información procedente de  una base de datos
+externa, así como decidir de qué manera debe formatearse tal información.
+
+En \cite{cascales00} se explica cómo usar \btx- para generar una base de datos
+de problemas  matemáticos. Y  en \cite{markey05} se  habla del posible  uso de
+\btx- para  generar una lista de  publicaciones y una  libreta de direcciones.
+Díez de Arriba y Javier Bezos, por su parte, han diseñado el paquete Gloss que
+usa  \btx-  para generar  glosarios,  mientras  que yo,  que  me  dedico a  la
+enseñanza del Derecho,  he usado \btx- para con una base  de datos de exámenes
+tipo test,  y, en  publicaciones de tipo  jurídico, con  una base de  datos de
+sentencias, de tal  modo que un simple comando \cmd  cite- pudiera insertar en
+el texto un rótulo identificativo  de una sentencia (del tipo <<STS 21-4-56>>)
+y, al final del documento, una lista con las sentencias citadas.
+
+Estos usos \emph{alternativos} de \btx- pueden requerir un \emph{paquete} para
+implementarlos. Sobre  todo si se pretende que  su uso no impida,  en el mismo
+documento, el uso de \btx- al modo  \emph{normal}. Así ocurre en el caso de la
+generación  de glosarios.   O pueden  exigir  el diseño  de un  tipo nuevo  de
+registro y  una función que  lo formatee incorporada  a alguno de  los estilos
+estándar de \btx- (como hice para la  base de datos de sentencias y para la de
+exámenes  tipo  test), o  simplemente  un  uso  determinado de  los  registros
+normales.
+
+Lo importante es que tengamos claro que \btx- esconde muchas más posibilidades
+de lo que a primera vista pudiera parecer.
+
+
+
+
+\appendix
+
+
+\section*{Apéndice  A:  GNU  Free  Documentation License  (Licencia  GNU  para
+  documentación)}
+\label{sec:gnu-free-docum}
+\addcontentsline{toc}{section}{Apéndice  A.  GNU  Free  Documentation License}
+% CAMBIO DE IDIOMA: INICIO
+\selectlanguage{english} \small
+
+\begin{center}
+   
+  Version 1.3, 3 November 2008
+   
+  Copyright \copyright 2000,2001,2002,2007,2008 Free Software Foundation, Inc. <<\url{https://fsf.org/}>>
+   
+  Everyone is permitted to copy and distribute verbatim copies of this license
+  document, but changing it is not allowed.
+\end{center}
+
+\begin{center}
+  {\bf\large Preamble}
+\end{center}
+
+The purpose of this License is to make a manual, textbook, or other functional and useful document "free" in the sense of freedom: to assure everyone the effective freedom to copy and redistribute it, with or without modifying it, either commercially or noncommercially. Secondarily, this License preserves for the author and publisher a way to get credit for their work, while not being considered responsible for modifications made by others.
+
+This License is a kind of "copyleft", which means that derivative works of the document must themselves be free in the same sense. It complements the GNU General Public License, which is a copyleft license designed for free software.
+
+We have designed this License in order to use it for manuals for free software, because free software needs free documentation: a free program should come with manuals providing the same freedoms that the software does. But this License is not limited to software manuals; it can be used for any textual work, regardless of subject matter or whether it is published as a printed book. We recommend this License principally for works whose purpose is instruction or reference.
+
+\begin{center}
+  {\Large\bf 1. APPLICABILITY AND DEFINITIONS}
+\end{center}
+
+\begin{center}
+  {\Large\bf 2. VERBATIM COPYING}
+\end{center}
+
+\begin{center}
+  {\Large\bf 3. COPYING IN QUANTITY}
+\end{center}
+
+
+\begin{center}
+  {\Large\bf 4. MODIFICATIONS}
+\end{center}
+
+
+\begin{center}
+  {\Large\bf 5. COMBINING DOCUMENTS}
+\end{center}
+
+
+\begin{center}
+  {\Large\bf 6. COLLECTIONS OF DOCUMENTS}
+\end{center}
+
+
+\begin{center}
+  {\Large\bf 7. AGGREGATION WITH INDEPENDENT WORKS}
+\end{center}
+
+
+
+\begin{center}
+  {\Large\bf 8. TRANSLATION}
+\end{center}
+
+
+
+\begin{center}
+  {\Large\bf 9. TERMINATION}
+\end{center}
+
+
+\begin{center}
+  {\Large\bf 10. FUTURE REVISIONS OF THIS LICENSE}
+\end{center}
+
+
+\begin{center}
+  {\Large\bf ADDENDUM: How to use this License for your documents}
+\end{center}
+
+To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and
+license notices just after the title page:
+
+\bigskip
+\begin{quote}
+  Copyright  \copyright  YEAR  YOUR NAME.
+  Permission is granted to copy, distribute and/or modify this document
+  under the terms of the GNU Free Documentation License, Version 1.3
+  or any later version published by the Free Software Foundation;
+  with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license is included in the section entitled 
+  "GNU Free Documentation License".
+\end{quote}
+\bigskip
+
+If you have Invariant Sections, Front-Cover Texts and Back-Cover Texts,
+replace the "with...Texts." line with this:
+
+\bigskip
+\begin{quote}
+  with the Invariant Sections being LIST THEIR TITLES, with the
+  Front-Cover Texts being LIST, and with the Back-Cover Texts being LIST.
+\end{quote}
+\bigskip
+
+If you have Invariant Sections without Cover Texts, or some other combination 
+of the three, merge those two alternatives to suit the situation.
+
+If your document contains nontrivial examples of program code, we recommend 
+releasing these examples in parallel under your choice of free software 
+license, such as the GNU General Public License, to permit their use in 
+free software. 
+
+% CAMBIO DE IDIOMA: FIN
+\selectlanguage{spanish}
+
+
+
+%REFERENCIAS EN DOS ESTILOS
+%Solo se listan las referencias invocadas en el documento
+
+% Estilo APA
+\bibliography{biblio}\bibliographystyle{apacite}
+% EStilo PERSONALIZADO
+%\bibliography{biblio}\bibliographystyle{articulo}
+
+\end{document}
