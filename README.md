@@ -23,7 +23,7 @@ Los archivos en el paquete son (en orden alfabético):
 
 ## Uso
 
-Si solo está interesado en leer o imprimir el documento, abra el archivo `ARTICULO_main.pdf`. 
+Si solo está interesado en leer o imprimir el documento, abra el archivo [`ARTICULO_main.pdf`](https://github.com/DanielCamarena/PlantillaArticulo/blob/main/ARTICULO_main.pdf). 
 
 Para modificaciones se puede editar y compilar el fichero `ARTICULO_main.tex`: 
 
